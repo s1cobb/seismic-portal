@@ -12,13 +12,18 @@ class Message(Resource):
     ''' Rest API interface to the MySql message database for
         maintaining messages received from rabbitmq 
     ''' 
-        
+    def __init__(self):
+       self.host = 'localhost'
+       self.user = 'root'
+       self.passwd = 'steve'
+       self.db = 'messages'
+       
     def get(self, id):
        ''' Fetch all records from database matching the id '''
-       conn = pymysql.connect(host = 'localhost', 
-                            user = 'root', 
-                            passwd = 'root', 
-                            db = 'messages',
+       conn = pymysql.connect(host = self.host, 
+                            user = self.user, 
+                            passwd = self.passwd, 
+                            db = self.db,
                             cursorclass=pymysql.cursors.DictCursor)
        
        try:
@@ -27,6 +32,14 @@ class Message(Resource):
              result = cur.fetchall()
              print(result)
              return jsonify({'message': result})
+       except pymysql.err.DataError as e:
+           result = "MySQL data error: %s" % e
+       except pymysql.err.IntegrityError as e:
+           result = "MySQL integrity error: %s" % e
+       except pymysql.err.NotSupportedError as e:
+           result = "MySQL command not supported %s" % e
+       except pymysql.err.OperationalError as e:
+           result = "MySQL operation error: %s" % e
        finally:
            conn.close()
        return jsonify({'Error': result})
@@ -34,10 +47,11 @@ class Message(Resource):
     ##################################################################
     def delete(self, id):
        ''' remove record from MySql database messages '''
-       conn = pymysql.connect(host = 'localhost', 
-                            user = 'root', 
-                            passwd = 'root', 
-                            db = 'messages',
+       result = 'na'
+       conn = pymysql.connect(host = self.host, 
+                            user = self.user, 
+                            passwd = self.passwd, 
+                            db = self.db,
                             cursorclass=pymysql.cursors.DictCursor)
        
        sql = 'delete from messages where id = %s' % id
@@ -50,9 +64,14 @@ class Message(Resource):
              if recr != 0:
                  print("Number of rows affected: %d" % recr)
                  result = {'numofrecs':recr}
-             else:
-                 print("ERROR: message table was not update")
-                 result = {'numofrecs':0}
+       except pymysql.err.DataError as e:
+           result = "MySQL data error: %s" % e
+       except pymysql.err.IntegrityError as e:
+           result = "MySQL integrity error: %s" % e
+       except pymysql.err.NotSupportedError as e:
+           result = "MySQL command not supported %s" % e
+       except pymysql.err.OperationalError as e:
+           result = "MySQL operation error: %s" % e
        finally:
            conn.close()
        return jsonify({'message': result})
@@ -60,10 +79,10 @@ class Message(Resource):
     #################################################################
     def put(self, id):
        ''' Update records in MySql database messages '''
-       conn = pymysql.connect(host = 'localhost', 
-                            user = 'root', 
-                            passwd = 'root', 
-                            db = 'messages',
+       conn = pymysql.connect(host = self.host, 
+                            user = self.user, 
+                            passwd = self.passwd, 
+                            db = self.db,
                             cursorclass=pymysql.cursors.DictCursor)
        
        # grab data from http request
@@ -81,8 +100,16 @@ class Message(Resource):
                  print("Number of rows affected: %d" % recr)
                  result = {'numofrecs':recr}
              else:
-                 print("ERROR: message table was not update")
+                 print("ERROR: message table was not updated")
                  result = {'numofrecs':0}
+       except pymysql.err.DataError as e:
+           result = "MySQL data error: %s" % e
+       except pymysql.err.IntegrityError as e:
+           result = "MySQL integrity error: %s" % e
+       except pymysql.err.NotSupportedError as e:
+           result = "MySQL command not supported %s" % e
+       except pymysql.err.OperationalError as e:
+           result = "MySQL operation error: %s" % e
        finally:
            conn.close()
        return jsonify({'message': result})
@@ -94,10 +121,10 @@ class Message(Resource):
     #          data={"route":value1, "message":msg}).json()   
     def post(self, id):
        ''' Insert records in MySql database messages from rabbitmq '''
-       conn = pymysql.connect(host = 'localhost', 
-                            user = 'root', 
-                            passwd = 'root', 
-                            db = 'messages',
+       conn = pymysql.connect(host = self.host, 
+                            user = self.user, 
+                            passwd = self.passwd, 
+                            db = self.db,
                             cursorclass=pymysql.cursors.DictCursor)
        
        key_value = request.form['route']
@@ -111,10 +138,23 @@ class Message(Resource):
              cur.execute(sql)
              conn.commit()
              recr = cur.rowcount
+             print("recr: %s" % recr)
              if not recr:
                  result = {'numofrecs':recr}
              else:
                  result = {'numofrecs':0}
+       except pymysql.err.DataError as e:
+           result = "MySQL data error: %s" % e
+           print("MySQL data error: %s" % e)
+       except pymysql.err.IntegrityError as e:
+           result = "MySQL integrity error: %s" % e
+           print("MySQL integrity error: %s" % e)
+       except pymysql.err.NotSupportedError as e:
+           result = "MySQL command not supported %s" % e
+           print("MySQL command not supported: %s" % e)
+       except pymysql.err.OperationalError as e:
+           result = "MySQL operation error: %s" % e
+           print("MySQL operation error: %s" % e)
        finally:
            conn.close()
        return jsonify({'message': result})
