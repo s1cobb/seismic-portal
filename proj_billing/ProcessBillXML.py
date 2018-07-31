@@ -6,7 +6,7 @@ logger = logging.getLogger('my_logger')
 
 ######################## Class LicXMLHandler Definition ######################
 class LicXMLHandler( xml.sax.ContentHandler ):
-    ''' Class will process the device/usage XML data 
+    ''' Class will process the conference XML data
         returns a list of dictionaries.
     '''
     def __init__( self, xmlout = [] ):
@@ -15,18 +15,18 @@ class LicXMLHandler( xml.sax.ContentHandler ):
         self.xmllis  = xmlout
 
         # D1 and D2 billing tags
-        self.cuwl_standard = False 
-        self.enhancedplus  = False 
+        self.cuwl_standard = False
+        self.enhancedplus  = False
         self.enhanced      = False
-        self.basic         = False 
-        self.essential     = False 
-        self.telepresence  = False 
-        self.totalusers    = False 
-        self.totaldevices  = False 
+        self.basic         = False
+        self.essential     = False
+        self.telepresence  = False
+        self.totalusers    = False
+        self.totaldevices  = False
         self.timestamp     = False
         self.lastcontact   = False
         self.elm           = False
- 
+
     def startElement(self, tag, attributes):
        ''' set value for specific start tags '''
        self.currtag = tag
@@ -60,41 +60,41 @@ class LicXMLHandler( xml.sax.ContentHandler ):
 
        if self.currtag == 'value':
           if self.cuwl_standard:
-             self.billinfo['CUWL Standard'] = content    
+             self.billinfo['CUWL Standard'] = content
              self.cuwl_standard = False
           elif self.enhancedplus:
              self.billinfo['EnhancedPlus'] = content
-             self.enhancedplus = False    
+             self.enhancedplus = False
           elif self.enhanced:
              self.billinfo['Enhanced'] = content
-             self.enhanced = False    
+             self.enhanced = False
           elif self.basic:
              self.billinfo['Basic'] = content
-             self.basic = False    
+             self.basic = False
           elif self.essential:
              self.billinfo['Essential'] = content
-             self.essential = False    
+             self.essential = False
           elif self.telepresence:
              self.billinfo['TelePresence Room'] = content
-             self.telepresence = False    
+             self.telepresence = False
           elif self.totalusers:
              self.billinfo['TotalUsers'] = content
-             self.totalusers = False    
+             self.totalusers = False
           elif self.totaldevices:
              self.billinfo['TotalDevices'] = content
-             self.totaldevices = False    
+             self.totaldevices = False
           elif self.timestamp:
              self.billinfo['Timestamp'] = content
-             self.timestamp = False    
+             self.timestamp = False
           elif self.lastcontact:
              self.billinfo['ElmLastContact'] = content
-             self.lastcontact = False    
+             self.lastcontact = False
           elif self.elm:
              self.billinfo['Elm'] = content
-             self.elm = False    
+             self.elm = False
 
     def endElement(self, tag):
-       ''' Append and cleanup data structures ''' 
+       ''' Append and cleanup data structures '''
 
        if tag == 'return':
           self.xmllis.append(self.billinfo)
@@ -120,7 +120,7 @@ class ConfXMLHandler( xml.sax.ContentHandler ):
           self.xmllis.append(self.billinfo)
           self.billinfo = {}
        elif self.currtag == 'coSpace':
-          self.billinfo['coSpace_id'] = attributes['id']
+          self.billinfo['coSpace id'] = attributes['id']
           self.cospace = True
 
     def characters(self, content):

@@ -3,15 +3,15 @@
 import sys
 import logging
 import xml.sax
+import requests
 import argparse
 import mysql.connector as mariadb
-from subprocess import Popen, PIPE
 from logging.handlers import RotatingFileHandler
 
 # user created library
 from BillingUtil import ProcessXML
 
-db_conn = None 
+db_conn = None
 cursor  = None
 
 cmd_inputs = argparse.ArgumentParser()
@@ -27,48 +27,53 @@ fh = RotatingFileHandler('/root/billing/logs/device_conf.log', maxBytes=500000, 
 fh.setFormatter(logfor)
 logit.addHandler(fh)
 
+# urls for data fetching
+dev_url  = 'https://10.207.200.82:8443/axl/'
+conf_url = 'https://10.207.200.84/api/v1/coSpaces'
+soap_header = { 'content-type':'text/xml', 'SOAPAction':'CUCM:DB ver=11.5'}
+
+# device/usage AXL request
+dev_axl_req = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">'
+dev_axl_req += '<soapenv:Header/><soapenv:Body><ns:executeSQLQuery sequence="">'
+dev_axl_req += '<sql>select name,value FROM TABLE (FUNCTION LicenseTotals()) (pkid,name,value,UserValue,DeviceValue)</sql>'
+dev_axl_req += '</ns:executeSQLQuery></soapenv:Body></soapenv:Envelope>'
+
+# setup database connection
 try:
    db_conn = mariadb.connect(database='Billing')
    cursor  = db_conn.cursor()
 except mariadb.Error as db_error:
    logit.error(" Database connection issue: %s" % db_error)
 
-# process the AXL conference room/Devices/Usage data
+# process the AXL Devices/Usage data
 if inputs.devusage:
    try:
-       proc = Popen('curl -k -s -u "administrator:fsp-WWcs!1" -H "Content-type: text/xml;" -H "SOAPAction:CUCM:DB ver=11.5" -d @LicUsageRequest.xml https://10.207.200.82:8443/axl/', stdout=PIPE, shell=True)
-       output, err = proc.communicate()
+       rsp = requests.post(dev_url, auth=('usr','pw'), headers=soap_header, data=dev_axl_req, verify=False)
 
-       #  err = None if no errors returned from SOAP call
-       if err:
-          logit.error('%d: %s' % (proc.returncode, err.strip()))
-       elif proc.returncode != 0 and not err:
-          logit.error('*** Retrieve devices - No error msg returned, Unknown error occurred, retcode: %d' % proc.returncode)
+       if not rsp.text:
+          logit.error('**** No XML data returned from the Web API request for device/usage report')
        else:
-           # Data from device/usage Api processed, logged here 
-           if output:
+           # Data from device/usage Api processed, logged here
+           if rsp.text:
                logit.info('***************************************************************')
                logit.info('\nFetching of Device/Usage XML data - successful')
-               parse_billing = ProcessXML('devices',output, db_conn, cursor )
-               parse_billing.process_xml() 
+               parse_billing = ProcessXML('devices',rsp.text, db_conn, cursor )
+               parse_billing.process_xml()
    except OSError as e:
        logit.error('errno: %d: %s' % (e.errno, e.strerror))
 
+# process the AXL conference room data
 if inputs.confspaces:
    try:
-       proc = Popen('curl -k -s -u "administrator:fsp-WWcs!1" -H "Content-type: text/xml;" -H "SOAPAction:CUCM:DB ver=11.5" https://10.207.200.84/api/v1/coSpaces', stdout=PIPE, shell=True)
-       output, err = proc.communicate()
+       rsp = requests.get(conf_url, auth=('usr','pw'), headers=soap_header, data=dev_axl_req, verify=False)
 
-       #  err = None if no errors returned from SOAP call
-       if err:
-           logit.error('%d: %s' % (proc.returncode, err.strip()))
-       elif proc.returncode != 0 and not err:
-          logit.error('*** Retrieve conference space - No error msg returned, Unknown error occurred, retcode: %d' % proc.returncode)
+       if not rsp.text:
+           logit.error('**** No XML data returned from the Web API request for conference space report')
        else:
-          # Data from conferences spaces processed, logged here  
-          if output:
-              logit.info('\nFetching of Conference Room XML data - successful') 
-              parse_billing = ProcessXML('conf_spaces',output, db_conn, cursor )
+          # Data from conference spaces processed, logged here
+          if rsp.text:
+              logit.info('\nFetching of Conference Room XML data - successful')
+              parse_billing = ProcessXML('conf_spaces',rsp.text, db_conn, cursor )
               parse_billing.process_xml()
               logit.info('*******************************************************************')
    except OSError as e:
