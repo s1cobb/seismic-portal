@@ -1,17 +1,20 @@
 #!/usr/bin/python
 
+import os
 import sys
+import smtplib
 import logging
 import xml.sax
 import requests
 import argparse
 import mysql.connector as mariadb
+from email.mime.text import MIMEText
 from logging.handlers import RotatingFileHandler
 
 # user created library
 from BillingUtil import ProcessXML
 
-db_conn = None
+db_conn = None 
 cursor  = None
 
 cmd_inputs = argparse.ArgumentParser()
@@ -26,6 +29,14 @@ logfor = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s', datefmt='
 fh = RotatingFileHandler('/root/billing/logs/device_conf.log', maxBytes=500000, backupCount=20)
 fh.setFormatter(logfor)
 logit.addHandler(fh)
+
+# setup logging, will log errors only/rotate files for splunk auditing
+logspk = logging.getLogger('splunk_logger')
+logspk.setLevel(logging.DEBUG)
+spklogfor = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+fh2 = RotatingFileHandler('/root/billing/logs/devconf_error.log', maxBytes=500000, backupCount=10)
+fh2.setFormatter(spklogfor)
+logspk.addHandler(fh2)
 
 # urls for data fetching
 dev_url  = 'https://10.207.200.82:8443/axl/'
@@ -43,41 +54,40 @@ try:
    db_conn = mariadb.connect(database='Billing')
    cursor  = db_conn.cursor()
 except mariadb.Error as db_error:
-   logit.error(" Database connection issue: %s" % db_error)
+   logit.error("\033[1;31;40m Database connection issue: %s \033[0;37;40m" % db_error)
+   logspk.error("\033[1;31;40m Database connection issue: %s \033[0;37;40m" % db_error)
 
 # process the AXL Devices/Usage data
 if inputs.devusage:
-   try:
-       rsp = requests.post(dev_url, auth=('usr','pw'), headers=soap_header, data=dev_axl_req, verify=False)
+    rsp = requests.post(dev_url, auth=('administrator','fsp-WWcs!1'), headers=soap_header, data=dev_axl_req, verify=False)
 
-       if not rsp.text:
-          logit.error('**** No XML data returned from the Web API request for device/usage report')
-       else:
-           # Data from device/usage Api processed, logged here
-           if rsp.text:
-               logit.info('***************************************************************')
-               logit.info('\nFetching of Device/Usage XML data - successful')
-               parse_billing = ProcessXML('devices',rsp.text, db_conn, cursor )
-               parse_billing.process_xml()
-   except OSError as e:
-       logit.error('errno: %d: %s' % (e.errno, e.strerror))
+    if not rsp.text:
+       logit.error("\033[1;31;40m **** No XML data returned from the Web API request for device/usage report \033[0;37;40m")
+       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request for device/usage report \033[0;37;40m")
+    else:
+       # Data from device/usage Api processed, logged here 
+       if rsp.text:
+           logit.info('***************************************************************')
+           logit.info('\nFetching of Device/Usage XML data - successful')
+           parse_billing = ProcessXML('devices',rsp.text, db_conn, cursor )
+           parse_billing.process_xml() 
 
 # process the AXL conference room data
 if inputs.confspaces:
-   try:
-       rsp = requests.get(conf_url, auth=('usr','pw'), headers=soap_header, data=dev_axl_req, verify=False)
+    rsp = requests.get(conf_url, auth=('administrator','fsp-WWcs!1'), headers=soap_header, data=dev_axl_req, verify=False)
 
-       if not rsp.text:
-           logit.error('**** No XML data returned from the Web API request for conference space report')
-       else:
-          # Data from conference spaces processed, logged here
-          if rsp.text:
-              logit.info('\nFetching of Conference Room XML data - successful')
-              parse_billing = ProcessXML('conf_spaces',rsp.text, db_conn, cursor )
-              parse_billing.process_xml()
-              logit.info('*******************************************************************')
-   except OSError as e:
-       logit.error('errno: %d: %s' % (e.errno, e.strerror))
+    if not rsp.text:
+       logit.error("\033[1;31;40m **** No XML data returned from the Web API request for conference space report \033[0;37;40m")
+       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request for conference space report \033[0;37;40m")
+    else:
+       # Data from conferences spaces processed, logged here  
+       if rsp.text:
+           logit.info('\nFetching of Conference Room XML data - successful') 
+           parse_billing = ProcessXML('conf_spaces',rsp.text, db_conn, cursor )
+           parse_billing.process_xml()
+           logit.info('*******************************************************************')
 
-db_conn.close()
+if db_conn:
+   db_conn.close()
+
 sys.exit(1)
