@@ -44,9 +44,11 @@ conf_url = 'https://10.207.200.84/api/v1/coSpaces'
 soap_header = { 'content-type':'text/xml', 'SOAPAction':'CUCM:DB ver=11.5'}
 
 # device/usage AXL request
-dev_axl_req = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">'
+dev_axl_req = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"'
+dev_axl_req += ' xmlns:ns="http://www.cisco.com/AXL/API/11.5">'
 dev_axl_req += '<soapenv:Header/><soapenv:Body><ns:executeSQLQuery sequence="">'
-dev_axl_req += '<sql>select name,value FROM TABLE (FUNCTION LicenseTotals()) (pkid,name,value,UserValue,DeviceValue)</sql>'
+dev_axl_req += '<sql>select name,value FROM TABLE (FUNCTION LicenseTotals())'
+dev_axl_req += ' (pkid,name,value,UserValue,DeviceValue)</sql>'
 dev_axl_req += '</ns:executeSQLQuery></soapenv:Body></soapenv:Envelope>'
 
 # setup database connection
@@ -54,16 +56,21 @@ try:
    db_conn = mariadb.connect(database='Billing')
    cursor  = db_conn.cursor()
 except mariadb.Error as db_error:
-   logit.error("\033[1;31;40m Database connection issue: %s \033[0;37;40m" % db_error)
-   logspk.error("\033[1;31;40m Database connection issue: %s \033[0;37;40m" % db_error)
+   logit.error("\033[1;31;40m Database connection issue: %s " \
+               "\033[0;37;40m" % db_error)
+   logspk.error("\033[1;31;40m Database connection issue: %s " \
+                "\033[0;37;40m" % db_error)
 
 # process the AXL Devices/Usage data
 if inputs.devusage:
-    rsp = requests.post(dev_url, auth=('administrator','fsp-WWcs!1'), headers=soap_header, data=dev_axl_req, verify=False)
+    rsp = requests.post(dev_url, auth=('administrator','fsp-WWcs!1'), 
+                        headers=soap_header, data=dev_axl_req, verify=False)
 
     if not rsp.text:
-       logit.error("\033[1;31;40m **** No XML data returned from the Web API request for device/usage report \033[0;37;40m")
-       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request for device/usage report \033[0;37;40m")
+       logit.error("\033[1;31;40m **** No XML data returned from the Web API request " \
+                   "for device/usage report \033[0;37;40m")
+       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request " \
+                    "for device/usage report \033[0;37;40m")
     else:
        # Data from device/usage Api processed, logged here 
        if rsp.text:
@@ -74,11 +81,14 @@ if inputs.devusage:
 
 # process the AXL conference room data
 if inputs.confspaces:
-    rsp = requests.get(conf_url, auth=('administrator','fsp-WWcs!1'), headers=soap_header, data=dev_axl_req, verify=False)
+    rsp = requests.get(conf_url, auth=('administrator','fsp-WWcs!1'), 
+                                       headers=soap_header, data=dev_axl_req, verify=False)
 
     if not rsp.text:
-       logit.error("\033[1;31;40m **** No XML data returned from the Web API request for conference space report \033[0;37;40m")
-       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request for conference space report \033[0;37;40m")
+       logit.error("\033[1;31;40m **** No XML data returned from the Web API request for " \
+                   "conference space report \033[0;37;40m")
+       logspk.error("\033[1;31;40m **** No XML data returned from the Web API request for " \
+                    " conference space report \033[0;37;40m")
     else:
        # Data from conferences spaces processed, logged here  
        if rsp.text:
