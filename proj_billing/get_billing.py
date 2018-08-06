@@ -39,8 +39,8 @@ fh2.setFormatter(spklogfor)
 logspk.addHandler(fh2)
 
 # urls for data fetching
-dev_url  = 'https://10.207.200.82:8443/axl/'
-conf_url = 'https://10.207.200.84/api/v1/coSpaces'
+dev_url  = 'https://url:8443/axl/'
+conf_url = 'https://url/api/v1/coSpaces'
 soap_header = { 'content-type':'text/xml', 'SOAPAction':'CUCM:DB ver=11.5'}
 
 # device/usage AXL request
@@ -63,7 +63,7 @@ except mariadb.Error as db_error:
 
 # process the AXL Devices/Usage data
 if inputs.devusage:
-    rsp = requests.post(dev_url, auth=('administrator','fsp-WWcs!1'), 
+    rsp = requests.post(dev_url, auth=('usr','pw'), 
                         headers=soap_header, data=dev_axl_req, verify=False)
 
     if not rsp.text:
@@ -81,7 +81,7 @@ if inputs.devusage:
 
 # process the AXL conference room data
 if inputs.confspaces:
-    rsp = requests.get(conf_url, auth=('administrator','fsp-WWcs!1'), 
+    rsp = requests.get(conf_url, auth=('usr','pw'), 
                                        headers=soap_header, data=dev_axl_req, verify=False)
 
     if not rsp.text:
