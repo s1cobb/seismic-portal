@@ -11,6 +11,22 @@ from ProcessBillXML import ConfXMLHandler
 
 class ProcessXML:
     def __init__(self, xml_type, xml_data, db_conn, cursor ):
+        ''' Class will process xml from the call manager and Cisco Meeting Server.
+            Make calls to the xml handlers and log output to logfiles and database.
+
+            Parameters:
+               xml_type: which xml data to process, 'devusage' or 'confspaces'
+               xml_data: actual xml data returned from web Api
+               db_conn:  connection to database
+               cursor:   cursor to the database, used for insertions
+
+            Example:
+
+               obj  = ProcessXML('conf_spaces',rsp.text, db_conn, cursor )
+               obj2 = ProcessXML('devices',rsp.text, db_conn, cursor )
+               obj.process_xml()
+        '''
+
         self.xml_type = xml_type
         self.xml_data = xml_data
         self.db_conn  = db_conn
@@ -31,21 +47,7 @@ class ProcessXML:
     # process_xml:  
     #########################################################################
     def process_xml(self):
-        ''' Class will process xml from the call manager and Cisco Meeting Server.
-        Make calls to the xml handlers and log output to logfiles and database.
-
-        Parameters:
-           xml_type: which xml data to process, 'devusage' or 'confspaces'
-           xml_data: actual xml data returned from web Api
-           db_conn:  connection to database
-           cursor:   cursor to the database, used for insertions
-
-        Example:
-
-           obj  = ProcessXML('conf_spaces',rsp.text, db_conn, cursor )
-           obj2 = ProcessXML('devices',rsp.text, db_conn, cursor )
-           obj.process_xml()
-        '''
+        ''' Process the XML data, convert and save to log file and database '''
 
         # call the XML handlers here to process XML data
         # handler ConfXMLHandler - parse Conference room data
