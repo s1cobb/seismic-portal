@@ -1,0 +1,33 @@
+---
+# tasks file for winServ12_WsusSrv_setup
+# wsusutil.exe postinstall SQL_INSTANCE_NAME="DC1\SQL2008" CONTENT_DIR=D:\WSUS
+
+- name: "Install WSUS feature roles"
+  script: install_wsus.ps1
+
+- name: "Postinstall on  WSUS features"
+  win_shell: .\WsusUtil.exe postinstall CONTENT_DIR=C:\WSUS
+  args:
+     chdir: C:\Program Files\Update Services\Tools\
+  register: rsp
+
+- name: "WsusUtil postinstall results"
+  debug: msg="{{ rsp }}"
+
+- name: "Check the current installion"
+  win_shell: Invoke-BpaModel -ModelId Microsoft/Windows/UpdateServices
+  register: bpa_results
+
+- debug: msg="Check requirements {{ bpa_results }}" 
+
+- name: "Verify the scan results for WSUS"
+  win_shell: Get-BpaResult -ModelId Microsoft/Windows/UpdateServices | Select Title,Severity,Compliance | Format-List 
+  register: scan_results
+
+- debug: msg="scan results {{ scan_results }}"
+
+#- name: "Sync the WSUS server configuration"
+#  script: sync_wsus.ps1
+
+#- name: "Setup to sync once a day automatically"
+#  script: sync_once_aday.ps1

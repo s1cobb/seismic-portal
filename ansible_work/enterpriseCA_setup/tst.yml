@@ -1,0 +1,39 @@
+---
+# Version 1.0
+# This playbook adds the certificate server to the domain
+# and adds the feature/roles to the server.
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Update the ou.csv file with correct domain name"
+    replace:
+       path: /home/hcsdadm/cns-ssa/ansible/windows/enterpriseCA_setup/roles/winServ12_OU_setup/files/ou.csv
+       regexp: 'DC=\w+,DC=\w+'
+       replace: "DC={{ad_domain.domain}},DC={{ ad_domain.ou_var}}" 
+       backup: yes 
+
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Certificate Server IP address to windows host group"
+    add_host:
+       name: "192.168.132.87"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - always 
+
+#- hosts: windows
+#  gather_facts: no
+
+#  tasks:
+  #- name: "get ipconfig test"
+  #  win_shell: ipconfig 
+  #  register: result
+
+
+  #- debug: msg="result {{ result }}"
+
+...

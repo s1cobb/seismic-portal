@@ -1,0 +1,37 @@
+---
+
+# Version 1.0
+# tasks file for winServ12_ADDC_add
+
+- name: "Add an additional Domain Controller to the domain"
+  script: AddDomainController.ps1 -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}" -domain_name "{{ ad_domain.domain_name }}" -domain "{{ ad_domain.domain }}" -site_name "{{ site_name }}" -replication_source "{{ ad_domain.domain_computer_name }}"
+
+- name: "Wait 180 seconds before restarting server"
+  wait_for_connection:
+     timeout: 180 
+     delay: 180 
+
+- name: "Set DNS client addresses "
+  win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddresses ( "{{ ad_domain.dns_server_addr1 }}", "{{ dns_server_addr }}")
+
+- name: "Restart Computer "
+  win_shell: Restart-Computer
+  ignore_errors: True
+  register: restart_result
+
+- debug: msg="Restart result rc={{restart_result.rc}} -- Passed"
+
+- name: "Wait 100 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 100 
+     delay: 100
+
+- name: "Get Active Directory Domain info"
+  win_shell: Get-ADDomain
+  ignore_errors: True
+  register: domain_result
+
+- name: "List active directory results"
+  debug: msg="{{ domain_result }}"
+
+...

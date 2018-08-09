@@ -1,0 +1,40 @@
+---
+# Version 1.0
+# tasks file for win_verify_esxi_vm
+
+- name: Get stats from newly created vm
+  vsphere_guest:
+    vcenter_hostname: "{{ vcenter_server }}"
+    username: "{{ vcenter_user }}"
+    password: "{{ vcenter_pwd }}"
+    guest: "{{ computer_name }}"
+    vmware_guest_facts: yes
+  register: vmstats
+
+- debug:
+    var: vmstats
+
+- name: "Verify vm {{ computer_name }} is powered on"
+  debug: msg="{{ computer_name }} is {{ vmstats['ansible_facts']['hw_power_status'] }}"
+  when: vmstats['ansible_facts']['hw_power_status'] == 'POWERED ON'
+
+- name: "Verify IP address type is assigned/generated for vm {{ computer_name }}"
+  debug: msg="IP address {{ vmstats['ansible_facts']['hw_eth0']['addresstype'] }}"
+  when: (vmstats['ansible_facts']['hw_eth0']['addresstype'] == 'assigned') or
+        (vmstats['ansible_facts']['hw_eth0']['addresstype'] == 'generated')
+
+- name: "Verify memory has been assigned for vm {{ computer_name }}"
+  debug: msg="Memory assigned  {{ vmstats['ansible_facts']['hw_memtotal_mb'] }}"
+  when: vmstats['ansible_facts']['hw_memtotal_mb'] == 4096
+
+- name: "Verify valid IP address for {{ computer_name }}"
+  set_fact: ipaddr="{{ vmstats['ansible_facts']['hw_eth0']['ipaddresses'][0] }}"
+  when: vmstats['ansible_facts']['hw_eth0']['ipaddresses'][0]
+
+- debug: msg="VM ip address {{ ipaddr }}"
+
+- name: "set vm host infomation to windows host group"
+  add_host:
+    name: "{{ ipaddr }}"
+    host_key_checking: False
+    groups: windows 

@@ -1,0 +1,28 @@
+---
+# Version 1.0
+# add a member to the active directory domain
+
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add member IP address to windows host group"
+    add_host:
+       name: "{{ guest_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+       - mems 
+
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_AddDNS_setup, dns: "{{ added_dns }}", tags: ['mems'] }
+
+...

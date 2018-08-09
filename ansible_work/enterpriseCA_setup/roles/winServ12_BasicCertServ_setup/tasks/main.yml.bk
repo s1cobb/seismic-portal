@@ -1,0 +1,9 @@
+---
+# Version 1.0
+# tasks file for winServ12_CertServ_setup
+
+- name: "Add user account to the group IIS_IUSRS"
+  win_shell: NET LOCALGROUP "IIS_IUSRS" "{{ ad_domain.domain }}\SAC" /add
+
+- name: "Setup Certificate Authority Services"
+  script: CreateCertAuth.ps1 -safe_passwd "{{ safe_passwd }}" -domain_name "{{ ad_domain.domain_name }}" -common_name "{{ ad_domain.common_name }}" -dist_name_suffix "{{ ad_domain.dist_name_suffix }}" 

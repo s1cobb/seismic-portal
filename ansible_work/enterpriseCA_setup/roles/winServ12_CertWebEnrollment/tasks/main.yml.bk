@@ -1,0 +1,8 @@
+---
+# Version 1.0
+# tasks file for winServ12_CertWebEnrollment
+
+- name: "Setup the Web Enrollment Service"
+  script: CreateWebEnrollment.ps1 -safe_passwd "{{ safe_passwd }}" -domain_name "{{ ad_domain.domain_name }}"
+
+...

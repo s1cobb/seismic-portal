@@ -1,0 +1,6 @@
+---
+# Version 1.0
+# tasks file for winServ12_certNetDeviceEnrollSrv
+
+- name: "Install the Certificate Network Device Enrollment Service"
+  script: CreateNetDeviceService.ps1 -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}" -domain "{{ ad_domain.domain }}" -web_role_user "{{ web_role_user }}" -web_role_password "{{ web_role_password }}"

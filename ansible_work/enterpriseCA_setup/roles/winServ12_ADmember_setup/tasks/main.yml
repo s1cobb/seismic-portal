@@ -1,0 +1,54 @@
+---
+
+# Version 1.0
+# tasks file for winServ12_ADmember_setup
+
+
+- name: "Change the computer name"
+  win_shell: Rename-Computer -NewName {{ computer_name }} -force 
+  ignore_errors: True
+  register: name_change_result
+
+- debug: msg="Computer name change rc={{name_change_result.rc}} -- Passed"
+  when: name_change_result.rc == 0
+
+- name: "Restart Computer "
+  win_shell: Restart-Computer
+  ignore_errors: True
+  register: restart_result
+
+- debug: msg="Restart result rc={{restart_result.rc}} -- Passed"
+  when: restart_result.rc == 0
+
+- name: "Wait 60 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 60 
+     delay: 60 
+
+- name: "Set DNS client addresses "
+  win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddress "{{ ad_domain.dns_server_addr1 }}"
+
+- name: "Get DNS client server addresses"
+  win_shell: Get-DNSClientServerAddress
+  ignore_errors: True
+  register: dns_addr_results
+
+- debug: msg="DNS client server address added {{ ad_domain.dns_server_addr1 }}"
+  when: dns_addr_results.stdout | search(ad_domain.dns_server_addr1)
+
+- name: "Add computer to domain"
+  script: AddDomainMember.ps1 -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}" -domain "{{ ad_domain.domain }}" -domain_name "{{ ad_domain.domain_name }}"
+
+- name: "Restart Computer "
+  win_shell: Restart-Computer
+  ignore_errors: True
+  register: restart_result
+
+- debug: msg="Restart result rc={{restart_result.rc}} -- Passed"
+  when: restart_result.rc == 0
+
+- name: "Wait 60 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 60 
+     delay: 60 
+...

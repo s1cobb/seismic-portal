@@ -1,0 +1,53 @@
+---
+# tasks file for winServ12_AddGPO_setup
+#
+
+- name: "Copy Domain Migrate file to DC"
+  win_copy:
+     src: mig.migtable 
+     dest: c:\itis\
+
+- name: "Copy GPO STIG zip file to new server"
+  win_copy:
+     src: "/home/hcsdadm/cns-ssa/ansible/windows/misc_powershell/{{ gpo_file_name }}"
+     dest: c:\itis\
+
+- name: "Extract GPO policy zip file in the new server"
+  win_unzip:
+     src: "c:\\itis\\{{ gpo_file_name }}"
+     dest: c:\itis\
+
+- name: "Copy AD WMI Filter file to new server"
+  win_copy:
+     src: /home/hcsdadm/cns-ssa/ansible/windows/misc_powershell/AD-WMI-Scripts.zip
+     dest: c:\itis\
+
+- name: "Extract AD WMI Filter file in the new server"
+  win_unzip:
+     src: c:\itis\AD-WMI-Scripts.zip
+     dest: c:\itis\AD-WMI-Scripts
+
+- name: "Wait 10 seconds before importing of GPOs"
+  wait_for_connection:
+     timeout: 10 
+     delay: 10
+
+- name: "Import the GPO Stigs"
+  script: ImportGPOs.ps1
+
+- name: "Wait 10 seconds before linking of GPOs"
+  wait_for_connection:
+     timeout: 10 
+     delay: 10
+
+- name: "Link Group Policies to OU's"
+  win_shell: New-GPLink -Name "{{ item.value.name }}" -Target "{{ item.value.target }}"
+  with_dict: "{{ gpo }}"
+  when: item.value.link == 'yes'
+
+- name: "Link Domain Controller Group Policies to OU's"
+  win_shell: New-GPLink -Name "{{ item.value.name }}" -Target "{{ item.value.target }}"
+  with_dict: "{{ dc_gpo }}"
+  when: item.value.link == 'yes'
+
+...

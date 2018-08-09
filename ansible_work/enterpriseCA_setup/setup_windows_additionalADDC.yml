@@ -1,0 +1,113 @@
+---
+# Version 1.0
+#  ansible-playbook --tags 'ad,cert,mems' setup_windows_additionalADDC.yml --ask-vault-pass
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+
+  tasks:
+  - name: "Copy windows_basic file for basic authentication"
+    copy:
+       src:  group_vars/windows_basic.yml
+       dest: group_vars/windows.yml
+    tags:
+      - ad 
+
+  - name: "Add Additional Domain Controller IP address to windows host group"
+    add_host:
+       name: "{{ adds_ad.adds_ad1.server_ip  }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - ad 
+
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+    -  {role: winServ12_ADmember_setup, computer_name: "{{ adds_ad.adds_ad1.comp_name }}", tags: ['ad'] }
+
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+    -  { role: winServ12_ADDC_add, site_name: "{{ adds_ad.adds_ad1.site_name }}", dns_server_addr: "{{ adds_ad.adds_ad1.dns_server_addr }}", tags: ['ad'] }
+    -  { role: winServ12_SPN_setup, spn_comp_name: "{{ adds_ad.adds_ad1.comp_name }}",  tags: ['ad'] }
+
+  tasks:
+  - name: "Set mutliple DNS client addresses"
+    win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddresses ( "{{ adds_ad.adds_ad1.additional_dns }}")
+    tags:
+      - ad
+
+
+########################################################################
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Copy windows_basic file for authentication"
+    copy:
+       src:  group_vars/windows_basic.yml
+       dest: group_vars/windows.yml
+    tags:
+        - ad 
+
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Additional Domain Controller IP address to original DC server"
+    add_host:
+       name: "{{ ad_domain.domain_controller_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - ad 
+
+- hosts: windows
+  gather_facts: no
+  
+  tasks:
+  - name: "Set mutliple DNS client addresses"
+    win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddresses ( "{{ adds_ad.adds_ad1.additional_dns }}")
+    tags:
+      - ad 
+
+################################################################
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Additional Domain Controller IP address to windows host group"
+    add_host:
+       name: "{{ ad_certificate.certificate_server_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - cert 
+
+- hosts: windows
+  gather_facts: no
+  
+  tasks:
+  - name: "Set mutliple DNS client addresses"
+    win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddresses ( "{{ adds_ad.adds_ad1.additional_dns }}")
+    tags:
+      - cert
+
+
+- include: add_additionDNS.yml  guest_ip="{{ members.mem1.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}"
+- include: add_additionDNS.yml  guest_ip="{{ members.mem2.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}" 
+#- include: add_additionDNS.yml  guest_ip="{{ members.mem3.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}" 
+#- include: add_additionDNS.yml  guest_ip="{{ members.mem4.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}"
+#- include: add_additionDNS.yml  guest_ip="{{ members.mem5.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}"
+#- include: add_additionDNS.yml  guest_ip="{{ members.mem6.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}" 
+#- include: add_additionDNS.yml  guest_ip="{{ members.mem7.comp_ip }}" added_dns="{{ adds_ad.adds_ad1.additional_dns }}" 
+
+...

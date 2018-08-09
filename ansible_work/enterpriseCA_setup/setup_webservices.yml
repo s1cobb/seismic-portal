@@ -1,0 +1,42 @@
+---
+
+# Version 1.0
+# This file is a work around for now, these two roles will
+# not install configuration from the main playbook, because of some strange error.
+# This playbook is run after setup_windows_domain.yml playbook is done.
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: "set kerberos login "
+      set_fact: kerberos_login="{{ ad_certificate.certificate_comp_name }}.{{ ad_domain.domain_name }}"
+      tags:
+        - always
+
+    - name: "Copy windows_kerberos file for kerberos authentication"
+      copy:
+        src:  group_vars/windows_kerberos.yml
+        dest: group_vars/windows.yml
+      tags:
+         - always
+    
+    - name: "Clear the windows inventory"
+      meta: refresh_inventory
+    
+    - name: "Add Certificate Server domain login to windows host group"
+      add_host:
+        name: "{{ kerberos_login }}"
+        groups: windows
+      tags:
+        - always
+  
+ 
+- hosts: windows 
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_CertEnrollWebServ,       tags: ['always'] }
+     - { role: winServ12_CertEnrollPolicyWebServ, tags: ['always'] }
+
+...

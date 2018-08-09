@@ -1,0 +1,8 @@
+---
+# Version 1.0
+# tasks file for winServ12_certOnlineResp
+#
+- name: "Install Certificate Online Responder"
+  script: Create_OnlineResponder.ps1 -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}" -domain_name "{{ ad_domain.domain_name }}"
+
+...

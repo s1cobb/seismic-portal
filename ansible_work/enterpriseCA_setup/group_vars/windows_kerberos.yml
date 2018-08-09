@@ -1,0 +1,7 @@
+ansible_user: "sSysop@COBBER.CNS"
+ansible_password: "opO2P!sc1#ville$"
+
+ansible_port: 5985
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
+ansible_winrm_transport: kerberos

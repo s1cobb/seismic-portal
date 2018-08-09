@@ -1,0 +1,46 @@
+---
+# Version 1.0
+# Playbook adds the reverse resource pointers to the domain server
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add domain server IP address to windows host group"
+    add_host:
+       name: "{{ ad_domain.domain_controller_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - ad
+      - mems 
+
+- hosts: windows
+  gather_facts: no
+
+  tasks:
+  - name: "Verify all computers are in the same domain"
+    win_shell: get-adcomputer -filter *
+    register: ad_results
+    tags:
+      - ad
+      - mems 
+
+  - debug: msg="{{ ad_results }}"
+    tags:
+      - always
+
+  - name: "Add reverse resource ptr to the domain controller"
+    win_shell: Add-DnsServerResourceRecordPtr -Name "{{ ad_certificate.resource_ptr }}" -ZoneName "132.168.192.in-addr.arpa" -AllowUpdateAny -TimeToLive 01:00:00 -AgeRecord -PtrDomainName "{{ ad_certificate.fqdn_name }}"
+    tags:
+      - cert
+
+  - name: "Add reverse resource ptr to the domain controller"
+    win_shell: Add-DnsServerResourceRecordPtr -Name "{{ item.value.resource_ptr }}" -ZoneName "132.168.192.in-addr.arpa" -AllowUpdateAny -TimeToLive 01:00:00 -AgeRecord -PtrDomainName "{{ item.value.fqdn_name }}"
+    with_dict: "{{ members }}"
+    tags:
+      - mems 
+...

@@ -1,0 +1,24 @@
+---
+
+# Version 1.0
+# Playbook is used to add members to the domain.
+# This is one of the playbooks that needs to be changed 
+# when new members are added into the group_vars/all file
+
+- include: add_member.yml guest_name="{{ members.mem1.comp_name }}" guest_ip="{{members.mem1.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem2.comp_name }}" guest_ip="{{members.mem2.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem3.comp_name }}" guest_ip="{{members.mem3.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem4.comp_name }}" guest_ip="{{members.mem4.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem5.comp_name }}" guest_ip="{{members.mem5.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem6.comp_name }}" guest_ip="{{members.mem6.comp_ip}}"
+#- include: add_member.yml guest_name="{{ members.mem7.comp_name }}" guest_ip="{{members.mem7.comp_ip}}"
+
+- include: add_spn.yml guest_name="{{ members.mem1.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem2.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem3.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem4.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem5.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem6.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+#- include: add_spn.yml guest_name="{{ members.mem7.comp_name }}" guest_ip="{{ad_domain.domain_controller_ip}}"
+
+...

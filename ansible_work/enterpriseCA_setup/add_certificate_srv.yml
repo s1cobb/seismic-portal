@@ -1,0 +1,55 @@
+---
+# Version 1.0
+# This playbook adds the certificate server to the domain
+# and adds the feature/roles to the server.
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Certificate Server IP address to windows host group"
+    add_host:
+       name: "{{ ad_certificate.certificate_server_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - always
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_ADmember_setup, computer_name: "{{ ad_certificate.certificate_comp_name }}", tags: ['cert'] }
+     - { role: winServ12_CreateDomainProfile,     tags: ['cert'] }
+     - { role: winServ12_BasicCertServ_setup,     tags: ['cert'] }
+     - { role: winServ12_CertWebEnrollment,       tags: ['cert'] }
+     - { role: winServ12_certOnlineResp,          tags: ['cert'] }
+     - { role: winServ12_certNetDeviceEnrollSrv,  tags: ['cert'] }
+
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add domain controller IP address to windows host group"
+    add_host:
+       name: "{{ ad_domain.domain_controller_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - always
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_SPN_setup, spn_comp_name: "{{ ad_certificate.certificate_comp_name }}", tags: ['cert'] }
+     - { role: winServ12_CompOUpos, computer_name: "{{ ad_certificate.certificate_comp_name }}", tags: ['cert'] }     
+
+...

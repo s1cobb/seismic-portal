@@ -1,0 +1,5 @@
+---
+# Version 1.0
+# vars file for win_verify_esxi_vm
+
+vcenter_server: "172.29.14.17"

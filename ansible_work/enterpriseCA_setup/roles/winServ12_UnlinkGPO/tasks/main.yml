@@ -1,0 +1,8 @@
+---
+# tasks file for winServ12_unlink_GPOs
+#
+
+- name: "Create and Link GPO's" 
+  script: UnLink_GPOs.ps1 -domain "{{ ad_domain.domain }}"
+
+...

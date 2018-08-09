@@ -1,0 +1,19 @@
+---
+
+# Version 1.0
+
+- name: "Copy the Organizational Unit CSV file to windows box"
+  win_copy:
+      src: ou.csv 
+      dest: c:\
+
+  
+- name: "Wait 5 seconds before continuing"
+  wait_for_connection:
+     timeout: 5 
+     delay: 5 
+
+- name: "Create the Organization Unit Structure"
+  win_shell: import-csv c:\ou.csv | New-ADOrganizationalUnit -PassThru
+
+...

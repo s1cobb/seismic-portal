@@ -1,0 +1,13 @@
+---
+# Version 1.0
+# tasks file for winServ12_CertEnrollWebServ
+
+- name: "Setup Domain User profile"
+  script: CreateDomainUserProfile.ps1  -safe_passwd "{{ safe_passwd }}" -domain_name "{{ ad_domain.domain }}"
+
+- name: "Wait 120 seconds for domain info to be processed"
+  wait_for_connection:
+     timeout: 120 
+     delay: 120 
+
+...

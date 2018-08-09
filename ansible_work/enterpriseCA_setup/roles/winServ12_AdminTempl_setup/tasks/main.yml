@@ -1,0 +1,14 @@
+---
+# tasks file for winServ12_AdminTempl_setup
+#
+
+- name: "Copy Administrator Template zip file to new server"
+  win_copy:
+      src:  /home/hcsdadm/cns-ssa/ansible/windows/misc_powershell/AdminTemplatesAPR2018.zip
+      dest: c:\itis
+
+- name: "Extract Administrator Template policy zip file in the new server"
+  win_unzip:
+      src: c:\itis\AdminTemplatesAPR2018.zip
+      dest: c:\Windows\SYSVOL\sysvol\domain\Policies
+

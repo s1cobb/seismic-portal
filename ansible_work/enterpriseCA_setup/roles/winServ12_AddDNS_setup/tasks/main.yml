@@ -1,0 +1,5 @@
+---
+- name: "Set mutliple DNS client addresses"
+  win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddresses ( "{{ dns }}")
+
+...

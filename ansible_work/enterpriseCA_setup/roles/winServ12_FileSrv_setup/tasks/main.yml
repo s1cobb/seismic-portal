@@ -1,0 +1,26 @@
+---
+
+# tasks file for winServ12_AD_setup
+
+- name: "Install File Server"
+  script: CreateFileServer.ps1 -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}"
+
+- name: "Restart Computer "
+  win_shell: Restart-Computer
+  ignore_errors: True
+  register: restart_result
+
+- debug: msg="Restart result rc={{restart_result.rc}} -- Passed"
+  when: restart_result.rc == 0
+
+- name: "Wait 120 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 120 
+     delay: 120
+
+#- name: "Get Active Directory Domain info"
+#  win_shell: 
+#  ignore_errors: True
+#  register: domain_result
+
+...

@@ -1,0 +1,26 @@
+---
+# Version 1.0
+# tasks file for winServ12_CertEnrollWebServ
+
+- name: "Get the Certificate Thumbprint"
+  win_shell: Get-ChildItem Cert:\LocalMachine\my
+  register: thumbprint_results
+  ignore_errors: True
+
+- set_fact: ca_thumbprint="{{ item }}"
+  with_items: "{{ thumbprint_results.stdout_lines }}"
+  when: item | search(ad_domain.domain)
+
+- name: "Parse out certificate thumbprint for server"
+  set_fact: found_thumbprint="{{ ca_thumbprint | regex_search('(^[\d\w]+)') }}"
+
+- debug: msg="Found thumbprint - {{ found_thumbprint }} "
+  when: found_thumbprint is defined
+
+- fail: msg="Failed to find thumbprint for certificate server"
+  when: found_thumbprint is undefined
+
+- name: "Setup Enrollment Web Service"
+  script: CreateEnrollWebService.ps1  -thumb_print "{{ found_thumbprint }}" -safe_passwd "{{ safe_passwd }}" -safe_domain_nm "{{ safe_domain_nm }}" -domain_name "{{ ad_domain.domain }}" -ca_config "{{ ad_domain.ca_config }}" -sacusr "{{ web_role_user }}" -sacpw "{{ web_role_password }}"
+
+...

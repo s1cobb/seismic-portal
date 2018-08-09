@@ -1,0 +1,27 @@
+---
+# Version 1.0
+# This playbook adds the certificate server to the domain
+# and adds the feature/roles to the server.
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Certificate Server IP address to windows host group"
+    add_host:
+       name: "{{ members.mem2.comp_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - sqlsrv 
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_FileSrv_setup,  tags: ['sqlsrv'] }
+
+...

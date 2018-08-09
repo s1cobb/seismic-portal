@@ -1,0 +1,82 @@
+---
+# Version 1.0
+# tasks file for winServ12_AD_setup
+
+- name: "Change the computer name"
+  win_shell: Rename-Computer -NewName {{ad_domain.domain_computer_name }} -force 
+  ignore_errors: True
+  register: name_change_result
+
+- debug: msg="Computer name change rc={{name_change_result.rc}} -- Passed"
+  when: name_change_result.rc == 0
+
+- name: "Restart Computer "
+  win_shell: Restart-Computer
+  ignore_errors: True
+  register: restart_result
+
+- debug: msg="Restart result rc={{restart_result.rc}} -- Passed"
+  when: restart_result.rc == 0
+
+- name: "Wait 300 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 300
+     delay: 300
+
+- name: "Install Active Directory and add forest"
+  script: CreateMSADforest.ps1 -safe_passwd "{{ safe_passwd }}" -domain_name "{{ ad_domain.domain_name }}" -domain_netbios_name "{{ ad_domain.domain_netbios_name }}"
+
+- name: "Wait 480 seconds for restart to be completed"
+  wait_for_connection:
+     timeout: 480 
+     delay: 480 
+
+- name: "Get Active Directory Domain info"
+  win_shell: Get-ADDomain
+  ignore_errors: True
+  register: domain_result
+
+- debug: msg="Forest name verified -- {{ ad_domain.domain_name }}"
+  when: domain_result.stdout | search(ad_domain.domain_name)
+
+- debug: msg="NetBIOSName verified -- {{ ad_domain.domain_netbios_name }}"
+  when: domain_result.stdout | search(ad_domain.domain_netbios_name)
+
+- name: "Add windows feature ad-domain-services "
+  win_shell:  Add-WindowsFeature -Name "ad-domain-services" -IncludeAllSubFeature -IncludeManagementTools
+
+- name: "Wait 60 seconds"
+  wait_for_connection:
+     timeout: 60 
+     delay: 60 
+
+- name: "Add DNS Primary Zone "
+  win_shell: Add-DnsServerPrimaryZone -DynamicUpdate Secure -NetworkId "192.168.132.0/24" -ReplicationScope Domain 
+
+- name: "Set DNS client addresses "
+  win_shell: Set-DNSClientServerAddress -interfaceAlias "Ethernet0" -ServerAddress "{{ ad_domain.dns_server_addr1 }}"
+
+- name: "Get DNS client server addresses"
+  win_shell: Get-DNSClientServerAddress
+  ignore_errors: True
+  register: dns_addr_results
+
+- debug: msg="DNS client server address added {{ ad_domain.dns_server_addr1 }}"
+  when: dns_addr_results.stdout | search(ad_domain.dns_server_addr1)
+
+- name: "Create local user. Used for Certificate Network device service"
+  win_shell: NET USER "{{ web_role_user }}" "{{ web_role_password }}" /add /y /expires:never
+
+- name: "Add SysOp user to Domain group - Domain Admins"
+  win_shell: Add-ADGroupMember -Identity "Domain Admins" -Members sSysOp 
+
+- name: "Add SysOp user to Domain group - Enterprise Admins"
+  win_shell: Add-ADGroupMember -Identity "Enterprise Admins" -Members sSysOp 
+
+- name: "Add SysOp user to Domain group - Group Policy Creator Owners"
+  win_shell: Add-ADGroupMember -Identity "Group Policy Creator Owners" -Members sSysOp 
+
+- name: "Add SysOp user to Domain group - Schema Admins"
+  win_shell: Add-ADGroupMember -Identity "Schema Admins" -Members sSysOp 
+
+...

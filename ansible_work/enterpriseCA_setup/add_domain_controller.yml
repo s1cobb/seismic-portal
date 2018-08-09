@@ -1,0 +1,42 @@
+---
+# Version 1.0
+# Playbook sets up the domain controller.
+
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Copy windows_basic file for basic authentication"
+    copy:
+       src:  group_vars/windows_basic.yml
+       dest: group_vars/windows.yml
+    tags:
+      - always
+
+  - name: "Update the ou.csv file with correct domain name"
+    replace:
+       path: /home/hcsdadm/cns-ssa/ansible/windows/enterpriseCA_setup/roles/winServ12_OU_setup/files/ou.csv
+       regexp: 'DC=\w+,DC=\w+'
+       replace: "DC={{ad_domain.domain}},DC={{ ad_domain.ou_var}}"
+       backup: yes
+    tags:
+      - ad
+
+  - name: "Add Domain Controller IP address to windows host group"
+    add_host:
+       name: "{{ ad_domain.domain_controller_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - always
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_AD_setup,         tags: ['ad'] }
+     - { role: winServ12_SPN_setup, spn_comp_name: "{{ ad_domain.domain_computer_name }}", tags: ['ad'] }
+     - { role: winServ12_OU_setup,         tags: ['ad'] }
+     - { role: winServ12_AdminTempl_setup, tags: ['ad'] }
+
+...

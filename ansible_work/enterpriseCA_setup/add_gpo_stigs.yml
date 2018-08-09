@@ -1,0 +1,28 @@
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: "Copy windows_basic file for basic authentication"
+    copy:
+       src:  group_vars/windows_basic.yml
+       dest: group_vars/windows.yml
+    tags:
+      - gpo
+
+  - name: "Clear the windows inventory"
+    meta: refresh_inventory
+
+  - name: "Add Domain Controller IP address to windows host group"
+    add_host:
+       name: "{{ ad_domain.domain_controller_ip }}"
+       host_key_checking: False
+       groups: windows
+    tags:
+      - gpo
+
+- hosts: windows
+  gather_facts: no
+
+  roles:
+     - { role: winServ12_AddGPO_setup,     tags: ['gpo'] }
+

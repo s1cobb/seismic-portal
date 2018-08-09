@@ -1,0 +1,39 @@
+---
+# This playbook will connect to the ESXi server and create
+# a vm based on the given variables assigned. All varibles
+# are store in the vars/main.yml and group_vars/all file. 
+
+- name: "Connect to ESXi and create vm {{ guest_name }}"
+  vsphere_guest:
+    vcenter_hostname: "{{ vcenter_server }}"
+    username: "{{ vcenter_user }}"
+    password: "{{ vcenter_pwd }}"
+    guest: "{{ guest_name }}"
+    state: powered_on
+    vm_extra_config:
+      vcpu.hotadd: yes
+      mem.hotadd: yes
+      notes: This is a test VM
+    vm_disk:
+      disk1:
+        size_gb: 30
+        type: thin
+        datastore: "{{ data_store }}"
+        folder: Ansible
+    vm_nic:
+      nic1:
+        type: vmxnet3 
+        network: MSA_PRIVATE
+        network_type: standard
+    vm_hardware:
+      memory_mb: 4096
+      num_cpus: 2
+      osid: windows8Server64Guest 
+      scsi: lsi_sas 
+      vm_cdrom:
+         type: "iso"
+         iso_path: "MSA_DEV_2/ISO\ Files/en_windows_server_2012_r2_with_update_x64_dvd_6052708.iso"
+    esxi:
+      datacenter: "{{ data_center }}"
+      hostname: "{{ vcenter_server }}"
+...

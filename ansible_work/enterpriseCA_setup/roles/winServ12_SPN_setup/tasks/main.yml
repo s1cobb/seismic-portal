@@ -1,0 +1,41 @@
+---
+# Version 1.0
+# tasks file for winServ12_SPN_setup
+
+- set_fact: "new_name={{ spn_comp_name }}."
+
+- name: "Set the first SPN for wimrm service"
+  win_command: setspn.exe -S WSMAN/{{ spn_comp_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+- name: "Set the second SPN for winrm service"
+  win_command: setspn.exe -S WSMAN/{{new_name}}{{ ad_domain.domain_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+- name: "Set the first SPN for wimrm service"
+  win_command: setspn.exe -S RestrictedKrbHost/{{ spn_comp_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+- name: "Set the second SPN for winrm service"
+  win_command: setspn.exe -S RestrictedKrbHost/{{new_name}}{{ ad_domain.domain_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+- name: "Set the first SPN for wimrm service"
+  win_command: setspn.exe -S TERMSRV/{{ spn_comp_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+- name: "Set the second SPN for winrm service"
+  win_command: setspn.exe -S TERMSRV/{{new_name}}{{ ad_domain.domain_name }} {{ spn_comp_name }}
+  ignore_errors: True
+
+
+- name: "Get all SPN's created"
+  win_command: setspn.exe -L {{ spn_comp_name }}
+  ignore_errors: True
+  register: spn_result
+
+- debug: msg="SPN {{ item }} has been added"
+  with_items: "{{ spn_result.stdout_lines }}"
+  when: item | search("WSMAN")
+
+...

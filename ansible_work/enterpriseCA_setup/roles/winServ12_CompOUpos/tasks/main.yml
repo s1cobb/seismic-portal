@@ -1,0 +1,7 @@
+---
+# tasks file for winServ12_CompOUpos
+
+- name: "Move computer {{ computer_name }} to correct OU"
+  script: MoveComputer.ps1  -comp_name "{{ computer_name }}" -domain_name "{{ ad_domain.domain }}"
+  ignore_errors: True
+

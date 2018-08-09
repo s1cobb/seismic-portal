@@ -1,0 +1,4 @@
+---
+# vars file for winServ12_SPN_setup
+
+spn_root: "WSMAN"

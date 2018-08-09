@@ -1,0 +1,75 @@
+---
+
+# Version 1.0
+# Main playbook to install AD domain server, AD certificate server
+# and window boxes to the doamin.
+#
+# **** STEP 1 -  Verify group_vars/all file has all domain information correct before running
+#                 > ansible-vault edit group_vars/all
+#
+#                 **** for now manual edit roles/winServ12_AddGPO_setup/files/mig.migtable when changing the domain,
+#                 **** set number of members in add_members_to_domain
+# 
+# **** STEP 2 -  For now these playbooks need to be run for setup
+#
+#                FOR DC and CA setup
+#                > ansible-playbook --tags 'ad,cert' setup_windows_domain.yml --ask-vault-pass
+#
+#                ###### manual work needed here to setup certificate auto enrollment
+#
+#                mems only - no specific server setup, just basic server box connected to domain
+#                > ansible-playbook --tags 'mems' setup_windows_domain.yml --ask-vault-pass
+# 
+#                # Server types
+#                  filsrv   --> File Server             -- v1 done
+#                  sqlsrv   --> SQL Server              later
+#                  fedsrv   --> Federation Server       later
+#                  remsrv   --> Remote Server Services  later
+#                  wsusrv   --> WSUS update server      -- v1 done
+#                  ticsrv   --> Ticket Server           later
+#                  oinsrv   --> Onrion Server           later
+# 
+#                # creates two members,  one File server, one WSUS server
+#                > ansible-playbook --tags 'mems,filsrv,wsusrv' setup_windows_domain.yml --ask-vault-pass
+# 
+#                # LATER WORK
+#                # creates seven members and add to domain, each a specific server type
+#                > ansible-playbook --tags 'mems,filsrv,sqlsrv,fedsrv,remsrv,wsusrv,ticsrv,oinsrv' setup_windows_domain.yml --ask-vault-pass
+#
+#
+# **** STEP 3 - Two webservice features can only be loaded at the end.
+#                > ansible-playbook setup_webservices.yml --ask-vault-pass
+#
+#
+# **** STEP 4 - If an additional Domain Controller is needed or if GPO's need to be installed
+#               do the following:
+#               > ansible-playbook --tags 'ad,cert,mems' setup_windows_additionalADDC.yml --ask-vault-pass
+#
+#               > ansible-playbook --tags 'gpo' setup_windows_domain.yml --ask-vault-pass
+#
+ 
+### setup the AD domain server
+- include: add_domain_controller.yml
+
+### setup the AD certificate server
+- include: add_certificate_srv.yml
+
+### add new members in this playbook 
+- include: add_member_to_domain.yml
+
+### add reverse lookup info to domain controller
+- include: add_resource_ptr.yml
+
+### add add FILE server setup 
+- include: add_file_server.yml
+
+### add SQL server setup 
+- include: add_sql_server.yml
+
+### add WSUS server setup 
+- include: add_wsus_server.yml
+
+### add GPO's to domain controller
+- include: add_gpo_stigs.yml
+
+...
