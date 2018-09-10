@@ -18,6 +18,7 @@ from sqlalchemy.exc import StatementError
 from sqlalchemy.exc import SQLAlchemyError
  
 # Flask rest API
+from flask import request
 from flask_restful import Resource
 from flask_restful import abort
  

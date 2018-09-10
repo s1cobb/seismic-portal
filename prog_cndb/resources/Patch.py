@@ -14,6 +14,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import create_engine
  
 # Flask rest API
+from flask import request
 from flask_restful import Resource
 from flask_restful import abort
  
