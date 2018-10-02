@@ -1,0 +1,212 @@
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set web-security "Contractor,PKI,DoD" "U.S. Government" RTP NC US SSA-Demo-CUCM
+
+WARNING: Country code can not be changed.
+Country code for existing web-security is : US
+
+WARNING: This operation creates self-signed certificate for web access (tomcat) with the updated organizational information.  However, certificates for other components (ipsec, CallManager, CAPF, etc.) still contain the original information. You may need to re-generate these self-signed certificates to update them.
+
+Regenerating web security certificates please wait ...
+
+WARNING: This operation will overwrite any CA signed certificate previously imported for  tomcat
+Proceed with regeneration (yes|no)? yes
+
+
+Successfully Regenerated Certificate for tomcat.
+You must restart services related to tomcat for the regenerated certificates to become active.
+
+admin:utils EnhancedSecurityMode enable
+
+The system is operating in NON-FIPS and NOT operating in Enhanced Security Mode mode.
+
+Enhanced Security Mode can be enabled only when the system is operating in FIPS mode
+Do you wish to enable  FIPS mode as well (yes/no) ? yes
+
+Warning : This operation will modify the password policies
+
+1)Password Length should be between 14 to 127 characters.
+2)Password should have at least 1 lowercase, 1 uppercase, 1 digit and 1 special character.
+3)Any of the previous 24 passwords cannot be reused.
+4)Minimum age of the password is 1 day and Maximum age of the password is 60 days.
+5)Any newly generated password's character sequence will need to differ by at least 4 characters from the old password's character sequence.
+
+*****************************************************************
+This will change the system to Enhanced Security Mode and will reboot
+*****************************************************************
+Do you want to continue (yes/no) ? yes
+
+Setting the remote syslog communication protocol to TCP.
+The protocol for communication with remote syslog server is set to tcp.
+
+Do you want to continue (yes/no) ? yes
+
+contact search authentication mode enabled.
+
+Setting password restrictions as part of Enhanced Security Mode enable
+
+Calling fips enable
+
+Security Warning : The operation will regenerate certificates for
+
+1)CallManager
+2)Tomcat
+3)IPsec
+4)TVS
+5)CAPF
+6)SSH
+
+Any third party CA signed certificates that have been uploaded for the above
+components will need to be re-uploaded.
+If the system is operating in mixed mode, then the CTL client needs to be run
+again to update the CTL file.
+If there are other servers in the cluster, please wait and do not change the
+FIPS settings on any other node until the FIPS operation on this node is complete
+and the system is back up and running.
+*********************************************************************************
+This will change the system to FIPS mode and will reboot.
+*********************************************************************************
+
+Do you want to continue (yes/no) ? yes
+
+Generating certificates...
+
+Setting FIPS mode in operating system.
+FIPS mode enabled.
+
+FIPS mode enabled successfully.
+********************************************************
+It is highly recommended that after your system restarts, 
+a system backup is performed.
+********************************************************
+The system will reboot in a few minutes.
+
+Stopping Service Manager...
+
+Broadcast message from administrator@SSADEMOCUCM3
+	(unknown) at 10:13 ...
+
+The system is going down for reboot NOW!
+admin:Connection to 10.207.200.82 closed by remote host.
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:utils auditd enable
+
+The auditd daemon has been started and was set to start upon reboot.
+
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set logging enable
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set accountlocking enable
+Account lockout successfully enabled
+
+WARNING! Login Account will get locked if three consecutive unsuccessfull login attempts are made.
+You will need to wait for at least 5 mins before the account gets unlocked.
+
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set accountlocking unlocktime 100
+Account lockout successfully configured
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set password inactivity enable
+
+ WARNING:  Please make sure that the OS Admin account does not become inactive prior to other Admin accounts. 
+
+Enabled password inactivity successfully
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.
+administrator@10.207.200.82's password: 
+Command Line Interface is starting up, please wait ...
+
+   Welcome to the Platform Command Line Interface
+
+VMware Installation:
+	2 vCPU: Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz
+	Disk 1: 110GB, Partitions aligned
+	8192 Mbytes RAM
+
+admin:set password inactivity period 5
+
+ WARNING: Please make sure that the OS Admin account does not become inactive prior to other Admin accounts. 
+
+Successfully set the Inactivity days to 5
+admin:exit
+
+
+
+Connection to 10.207.200.82 closed.

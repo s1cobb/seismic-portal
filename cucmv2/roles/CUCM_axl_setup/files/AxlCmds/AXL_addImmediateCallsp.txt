@@ -1,0 +1,37 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addCss sequence="?">
+         <css>
+            <description>Immediate Calling Search Space</description>
+            <members>
+               <member>
+                  <routePartitionName uuid="?">Immediate_PT</routePartitionName>
+                  <index>1</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">Priority_PT</routePartitionName>
+                  <index>2</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">Routine_PT</routePartitionName>
+                  <index>3</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">MLPP_Restricted_PT</routePartitionName>
+                  <index>4</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">External_PT</routePartitionName>
+                  <index>5</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">Internal_PT</routePartitionName>
+                  <index>6</index>
+               </member>
+            </members>
+            <name>Immediate_CSS</name>
+         </css>
+      </ns:addCss>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addResourcePriorityNamespace sequence="?">
+         <resourcePriorityNamespace>
+            <namespace>dsn-000000</namespace>
+            <description>DSN namespace with default domain</description>
+            <isDefault>true</isDefault>
+         </resourcePriorityNamespace>
+      </ns:addResourcePriorityNamespace>
+   </soapenv:Body>
+</soapenv:Envelope>
+

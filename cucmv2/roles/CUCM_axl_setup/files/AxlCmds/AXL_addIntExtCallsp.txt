@@ -1,0 +1,21 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addCss sequence="?">
+         <css>
+            <description>Internal/External Calling Search Space</description>
+            <members>
+               <member>
+                  <routePartitionName uuid="?">External_PT</routePartitionName>
+                  <index>1</index>
+               </member>
+               <member>
+                  <routePartitionName uuid="?">Internal_PT</routePartitionName>
+                  <index>2</index>
+               </member>
+            </members>
+            <name>Internal_External_CSS</name>
+         </css>
+      </ns:addCss>
+   </soapenv:Body>
+</soapenv:Envelope>

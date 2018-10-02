@@ -1,0 +1,106 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addSipTrunk sequence="?">
+         <sipTrunk ctiid="?">
+            <name>UCM-CUPS-SIP-Trunk</name>
+               <description>UCM-CUPS-SIP-Trunk</description>
+               <product>SIP Trunk</product>
+               <model>SIP Trunk</model>
+               <class>Trunk</class>
+               <protocol>SIP</protocol>
+               <protocolSide>Network</protocolSide>
+               <networkLocation>Use System Default</networkLocation>
+               <mediaResourceListName/>
+               <devicePoolName uuid="?">Default</devicePoolName>
+               <networkHoldMohAudioSourceId/>
+               <userHoldMohAudioSourceId/>
+               <automatedAlternateRoutingCssName/>
+               <aarNeighborhoodName/>
+               <packetCaptureMode>None</packetCaptureMode>
+               <packetCaptureDuration>0</packetCaptureDuration>
+               <loadInformation special="false"/>
+               <traceFlag>false</traceFlag>
+               <mlppIndicationStatus>Off</mlppIndicationStatus>
+               <preemption>Disabled</preemption>
+               <useTrustedRelayPoint>Default</useTrustedRelayPoint>
+               <retryVideoCallAsAudio>true</retryVideoCallAsAudio>
+               <cgpnTransformationCssName/>
+               <useDevicePoolCgpnTransformCss>true</useDevicePoolCgpnTransformCss>
+               <geoLocationName/>
+               <geoLocationFilterName/>
+               <sendGeoLocation>false</sendGeoLocation>
+               <cdpnTransformationCssName/>
+               <useDevicePoolCdpnTransformCss>true</useDevicePoolCdpnTransformCss>
+               <unattendedPort>false</unattendedPort>
+               <transmitUtf8>false</transmitUtf8>
+               <subscribeCallingSearchSpaceName/>
+               <rerouteCallingSearchSpaceName/>
+               <referCallingSearchSpaceName/>
+               <mtpRequired>false</mtpRequired>
+               <unknownPrefix>Default</unknownPrefix>
+               <destAddrIsSrv>false</destAddrIsSrv>
+               <tkSipCodec>711ulaw</tkSipCodec>
+               <sigDigits enable="false">99</sigDigits>
+               <connectedNamePresentation>Default</connectedNamePresentation>
+               <connectedPartyIdPresentation>Default</connectedPartyIdPresentation>
+               <callingPartySelection>Originator</callingPartySelection>
+               <callingname>Default</callingname>
+               <callingLineIdPresentation>Default</callingLineIdPresentation>
+               <acceptInboundRdnis>false</acceptInboundRdnis>
+               <acceptOutboundRdnis>false</acceptOutboundRdnis>
+               <Allowed>false</srtpAllowed>
+               <srtpFallbackAllowed>true</srtpFallbackAllowed>
+               <isPaiEnabled>true</isPaiEnabled>
+               <sipPrivacy>Default</sipPrivacy>
+               <isRpidEnabled>true</isRpidEnabled>
+               <sipAssertedType>Default</sipAssertedType>
+               <dtmfSignalingMethod>No Preference</dtmfSignalingMethod>
+               <routeClassSignalling>Default</routeClassSignalling>
+               <sipTrunkType>None(Default)</sipTrunkType>
+               <pstnAccess>false</pstnAccess>
+               <imeE164TransformationName/>
+               <securityProfileName uuid="?">SIP-Security-Profile-CUPs</securityProfileName>
+               <sipProfileName uuid="?">CUPS-SIP-Profile</sipProfileName>
+               <useImePublicIpPort>false</useImePublicIpPort>
+               <useDevicePoolCntdPnTransformationCss>true</useDevicePoolCntdPnTransformationCss>
+               <cntdPnTransformationCssName/>
+               <useDevicePoolCgpnTransformCssUnkn>true</useDevicePoolCgpnTransformCssUnkn>
+               <rdnTransformationCssName/>
+               <useDevicePoolRdnTransformCss>true</useDevicePoolRdnTransformCss>
+               <sipNormalizationScriptName/>
+               <runOnEveryNode>true</runOnEveryNode>
+               <destinations>
+                  <destination uuid="?">
+                     <addressIpv4>10.207.200.83</addressIpv4>
+                     <addressIpv6/>
+                     <port>5061</port>
+                     <sortOrder>1</sortOrder>
+                  </destination>
+               </destinations>
+               <unknownStripDigits/>
+               <cgpnTransformationUnknownCssName/>
+               <tunneledProtocol>None</tunneledProtocol>
+               <asn1RoseOidEncoding>No Changes</asn1RoseOidEncoding>
+               <qsigVariant>No Changes</qsigVariant>
+               <pathReplacementSupport>false</pathReplacementSupport>
+               <enableQsigUtf8>false</enableQsigUtf8>
+               <scriptParameters/>
+               <scriptTraceEnabled>false</scriptTraceEnabled>
+               <trunkTrafficSecure>When using both sRTP and TLS</trunkTrafficSecure>
+               <callingAndCalledPartyInfoFormat>Deliver DN only in connected party</callingAndCalledPartyInfoFormat>
+               <useCallerIdCallerNameinUriOutgoingRequest>false</useCallerIdCallerNameinUriOutgoingRequest>
+               <requestUriDomainName/>
+               <recordingInformation/>
+               <calledPartyUnknownTransformationCssName/>
+               <calledPartyUnknownPrefix>Default</calledPartyUnknownPrefix>
+               <calledPartyUnknownStripDigits/>
+               <useDevicePoolCalledCssUnkn>true</useDevicePoolCalledCssUnkn>
+               <confidentialAccess>
+                  <confidentialAccessMode/>
+                  <confidentialAccessLevel>-1</confidentialAccessLevel>
+               </confidentialAccess>
+         </sipTrunk>
+      </ns:addSipTrunk>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,12 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xlmns:ns="http://www.cisco.com/AXL/API/11.5">
+  <soapenv:Header/>
+  <soapenv:Body>
+     <ns:addRoutePartition sequence="?">
+        <routePartition>
+           <name>VARIABLE1</name>
+           <description>VARIABLE2</description>
+           <partitionUsage>General</partitionUsage>
+        </routePartition>
+     </ns:addRoutePartition>
+  </soapenv:Body>
+</soapenv:Envelope>

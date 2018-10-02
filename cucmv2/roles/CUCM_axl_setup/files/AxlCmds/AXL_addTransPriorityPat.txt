@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+<soapenv:Header/>
+   <soapenv:Body>
+    <ns:addTransPattern sequence="?">
+      <transPattern>
+         <pattern>93.!</pattern>
+         <description>Priority (P) precedence</description>
+         <usage>Translation</usage>
+         <routePartitionName uuid="?">Priority_PT</routePartitionName>
+         <provideOutsideDialtone>true</provideOutsideDialtone>
+         <patternUrgency>true</patternUrgency>
+         <patternPrecedence>Priority</patternPrecedence>
+         <callingSearchSpaceName uuid="?">Internal_External_CSS</callingSearchSpaceName>
+      </transPattern>
+    </ns:addTransPattern>
+  </soapenv:Body>
+</soapenv:Envelope>
+

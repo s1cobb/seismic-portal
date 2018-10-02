@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+       <ns:addRoutePartition sequence="?">
+         <routePartition>
+            <name>Priority_PT</name> 
+            <description>MLPP Priority Partition</description>
+            <partitionUsage>General</partitionUsage>
+         </routePartition>
+       </ns:addRoutePartition>
+   </soapenv:Body>
+</soapenv:Envelope>
+

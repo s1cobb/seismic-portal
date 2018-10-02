@@ -1,0 +1,22 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://schemas.cisco.com/ast/soap">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:soapDoServiceDeployment>
+         <soap:DeploymentServiceRequest>
+            <soap:NodeName>add_ip_address</soap:NodeName>
+            <soap:DeployType>Deploy</soap:DeployType>
+            <soap:ServiceList>
+               <soap:item>Cisco CallManager</soap:item>
+               <soap:item>Cisco Tftp</soap:item>
+               <soap:item>Cisco CTL Provider</soap:item>
+               <soap:item>Cisco Certificate Authority Proxy Function</soap:item>
+               <soap:item>Cisco DirSync</soap:item>
+               <soap:item>Cisco Bulk Provisioning Service</soap:item>
+               <soap:item>Cisco AXL Web Service</soap:item>
+               <soap:item>Cisco SOAP - CDRonDemand Service</soap:item>
+               <soap:item>Cisco CAR Web Service</soap:item>
+            </soap:ServiceList>
+         </soap:DeploymentServiceRequest>
+      </soap:soapDoServiceDeployment>
+   </soapenv:Body>
+</soapenv:Envelope>

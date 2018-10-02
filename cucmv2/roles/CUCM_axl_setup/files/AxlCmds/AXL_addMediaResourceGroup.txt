@@ -1,0 +1,17 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addMediaResourceGroup sequence="?">
+         <mediaResourceGroup>
+            <name>AS-SIP-Trunk-No-Media</name>
+            <description>No Media Over SIP trunks</description>
+            <multicast>false</multicast>
+            <members>
+               <member>
+                  <deviceName uuid="?">MTP_2</deviceName>
+               </member>
+            </members>
+         </mediaResourceGroup>
+      </ns:addMediaResourceGroup>
+   </soapenv:Body>
+</soapenv:Envelope>
