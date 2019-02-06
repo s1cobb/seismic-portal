@@ -19,7 +19,6 @@
 
 '''
 
-
 import os
 import sys
 import csv 
@@ -30,63 +29,21 @@ import xml.sax
 import urllib2
 import argparse
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
 
 # user created library
 from BillingUtil import ProcessXML
 from DataBaseUtil import DataDB
-
-# Had to use standard library urllib2, not able to load the requests package
-# into the classified network
-def axl_data_request(url=None, add_header=None, data=None, usr=None, pw=None):
-    # create a password manager
-    password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-
-    # Add the username and password.
-    password_mgr.add_password(None, url, usr, pw)
-
-    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-
-    # create "opener" (OpenerDirector instance)
-    opener = urllib2.build_opener(handler)
-
-    # use the opener to fetch a URL
-    opener.open(url)
-
-    # Install the opener, Now all calls to urllib2.urlopen use our opener.
-    urllib2.install_opener(opener)
-
-    req = urllib2.Request(url, data, add_header)
-    response = urllib2.urlopen(req)
-    xml_rsp = response.read()
-
-    return xml_rsp
-#################################################################
+import misc_util
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
 cmd_inputs = argparse.ArgumentParser()
-cmd_inputs.add_argument('--devusage',   help='Get Cisco License/Device Usage data', action='store_true')
-cmd_inputs.add_argument('--confspace',  help='Get Conference meeting data', action='store_true')
+cmd_inputs.add_argument('--devusage', help='Get Cisco License/Device Usage data', action='store_true')
+cmd_inputs.add_argument('--confspace', help='Get Conference meeting data', action='store_true')
 inputs = cmd_inputs.parse_args()
 
 # setup logging, will log data to file and rotate files
-logit = logging.getLogger('my_logger')
-logit.setLevel(logging.DEBUG)
-logfor = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p')
-fh = RotatingFileHandler('/root/billing/logs/data.log', maxBytes=100000, backupCount=10)
-fh.setFormatter(logfor)
-logit.addHandler(fh)
-
-# setup logging, will log errors only/rotate files for splunk auditing
-logspk = logging.getLogger('splunk_logger')
-logspk.setLevel(logging.DEBUG)
-spklogfor = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s', 
-                               datefmt='%m/%d/%Y %I:%M:%S %p')
-fh2 = RotatingFileHandler('/root/billing/logs/error.log', maxBytes=100000, backupCount=10)
-fh2.setFormatter(spklogfor)
-logspk.addHandler(fh2)
+logspk = logging.getLogger('spk_error_logger')
 
 # initialize database access
 db_access = DataDB(logspk)
@@ -106,8 +63,6 @@ dev_axl_req += '</ns:executeSQLQuery></soapenv:Body></soapenv:Envelope>'
 # get current date
 currdate_info = {}
 dat = datetime.now()
-currdate_info['currdate'] = dat.strftime('%m/%d/%Y %I:%M:%S %p')
-currdate_info['month'] = dat.strftime('%B')
 
 # load the billing configuration file
 config_data = {}
@@ -116,9 +71,12 @@ try:
       data = csv.DictReader(fp)
       for row in data:
          config_data[row['ser_type']] = row
+         config_data[row['ser_type']]['month'] = dat.strftime('%B')
+         config_data[row['ser_type']]['currdate'] = dat.strftime('%Y-%m-%d %H:%M:%S')
 except IOError:
-      logspk.error('Billing script failed to load configuration file no billing data captured.') 
+      logspk.error('Billing script failed to load configuration file, script not started.') 
       sys.exit()
+
 
 for server in config_data.keys():
    if config_data[server]['target'] == 'CUCM':
@@ -128,22 +86,17 @@ for server in config_data.keys():
          rsp = ''
 
          try:
-             rsp = axl_data_request(url=dev_url, add_header=soap_header, data=dev_axl_req, 
-                                    usr=cucm_usr, pw=cucm_pw)
+            rsp = misc_util.axl_data_request(url=dev_url, add_header=soap_header,
+                                              data=dev_axl_req, usr=cucm_usr, pw=cucm_pw)
          except (urllib2.HTTPError, urllib2.URLError) as e:
-             logspk.error("%s:%s:%s:%s:%s - Error with HTTP call to Call Manager: %s " \
-                          % (config_data[server]['contract'], currdate_info['month'],
-                             config_data[server]['target'], config_data[server]['local_or_remote'],
-                             config_data[server]['ip_address'],str(e.reason)))
-         
+            misc_util.log_message(logspk, config_data[server],
+                                   'Error with HTTP call to Call Manager', 'sys_error', e)
          if not rsp:
-            logspk.error("%s:%s:%s:%s:%s - No XML data returned from Call Manager " \
-                         % (config_data[server]['contract'], currdate_info['month'], 
-                            config_data[server]['target'], config_data[server]['local_or_remote'],
-                            config_data[server]['ip_address']))
+            misc_util.log_message(logspk, config_data[server],
+                                   'No XML data returned from Call Manager', 'error')
          else:
             # Data from device/usage Api processed, logged here 
-            parse_billing = ProcessXML('devices', rsp, currdate_info, db_access, config_data[server])
+            parse_billing = ProcessXML('devices', rsp, db_access, config_data[server])
             parse_billing.process_xml() 
          time.sleep(3)
    elif config_data[server]['target'] == 'CMS':
@@ -153,21 +106,16 @@ for server in config_data.keys():
          rsp = ''
 
          try:
-            rsp = axl_data_request(url=conf_url, add_header=soap_header, usr=cucm_usr, pw=cucm_pw)
+            rsp = misc_util.axl_data_request(url=conf_url, add_header=soap_header, usr=cucm_usr, pw=cucm_pw)
          except (urllib2.HTTPError, urllib2.URLError) as e: 
-            logspk.error("%s:%s:%s:%s:%s - ERROR with HTTP call to Cisco Meeting Server: %s" \
-                         % (config_data[server]['contract'], currdate_info['month'],
-                            config_data[server]['target'], config_data[server]['local_or_remote'],
-                            config_data[server]['ip_address'],str(e.reason)))
-
+            misc_util.log_message(logspk, config_data[server],
+                                   'ERROR with HTTP call to Cisco Meeting Server', 'sys_error', e)
          if not rsp:
-            logspk.error("%s:%s:%s:%s:%s - No XML data returned from Cisco Meeting Server " \
-                          % (config_data[server]['contract'], currdate_info['month'], 
-                             config_data[server]['target'], config_data[server]['local_or_remote'],
-                             config_data[server]['ip_address']))
+            misc_util.log_message(logspk, config_data[server],
+                                   'No XML data returned from Cisco Meeting Server', 'error')
          else:
             # Data from conferences spaces processed, logged here  
-            parse_billing = ProcessXML('conf_spaces', rsp, currdate_info, db_access, config_data[server])
+            parse_billing = ProcessXML('conf_spaces', rsp, db_access, config_data[server])
             parse_billing.process_xml()
          time.sleep(3)
 
