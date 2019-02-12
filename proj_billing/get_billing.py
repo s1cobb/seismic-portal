@@ -32,7 +32,6 @@ from datetime import datetime
 
 # user created library
 from BillingUtil import ProcessXML
-from DataBaseUtil import DataDB
 import misc_util
 
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -42,23 +41,8 @@ cmd_inputs.add_argument('--devusage', help='Get Cisco License/Device Usage data'
 cmd_inputs.add_argument('--confspace', help='Get Conference meeting data', action='store_true')
 inputs = cmd_inputs.parse_args()
 
-# setup logging, will log data to file and rotate files
+# setup logging 
 logspk = logging.getLogger('spk_error_logger')
-
-# initialize database access
-db_access = DataDB(logspk)
-
-cucm_usr = 'StcobbAXL'
-cucm_pw = 'fsp-WWcs!1'
-
-# Soap AXL request setup
-soap_header = { 'content-type':'text/xml', 'SOAPAction':'CUCM:DB ver=11.5'}
-dev_axl_req = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"'
-dev_axl_req += ' xmlns:ns="http://www.cisco.com/AXL/API/11.5">'
-dev_axl_req += '<soapenv:Header/><soapenv:Body><ns:executeSQLQuery sequence="">'
-dev_axl_req += '<sql>select name,value FROM TABLE (FUNCTION LicenseTotals())'
-dev_axl_req += ' (pkid,name,value,UserValue,DeviceValue)</sql>'
-dev_axl_req += '</ns:executeSQLQuery></soapenv:Body></soapenv:Envelope>'
 
 # get current date
 currdate_info = {}
@@ -70,9 +54,9 @@ try:
    with open('billing_config.csv', 'r') as fp:
       data = csv.DictReader(fp)
       for row in data:
-         config_data[row['ser_type']] = row
-         config_data[row['ser_type']]['month'] = dat.strftime('%B')
-         config_data[row['ser_type']]['currdate'] = dat.strftime('%Y-%m-%d %H:%M:%S')
+         config_data[row['serv_cnt']] = row
+         config_data[row['serv_cnt']]['month'] = dat.strftime('%B')
+         config_data[row['serv_cnt']]['currdate'] = dat.strftime('%Y-%m-%d %H:%M:%S')
 except IOError:
       logspk.error('Billing script failed to load configuration file, script not started.') 
       sys.exit()
@@ -82,42 +66,46 @@ for server in config_data.keys():
    if config_data[server]['target'] == 'CUCM':
       # process the AXL Devices/Usage data
       if inputs.devusage:
-         dev_url  = 'https://' + config_data[server]['ip_address'] + ':8443/axl/'
+         #dev_url  = 'https://' + config_data[server]['ip_address'] + ':8443/axl/'
+         dev_url = 'http://' + config_data[server]['ip_address'] + ':' + config_data[server]['port'] + '/api/cucm'
          rsp = ''
 
          try:
-            rsp = misc_util.axl_data_request(url=dev_url, add_header=soap_header,
-                                              data=dev_axl_req, usr=cucm_usr, pw=cucm_pw)
+            rsp = misc_util.axl_data_request(url=dev_url, req_type='devices',
+                                             usr=config_data[server]['axlusr'],
+                                             pw=config_data[server]['axlpwd'])
          except (urllib2.HTTPError, urllib2.URLError) as e:
             misc_util.log_message(logspk, config_data[server],
-                                   'Error with HTTP call to Call Manager', 'sys_error', e)
+                                   ' with HTTP call to Call Manager', 'sys_error', e)
          if not rsp:
             misc_util.log_message(logspk, config_data[server],
                                    'No XML data returned from Call Manager', 'error')
          else:
             # Data from device/usage Api processed, logged here 
-            parse_billing = ProcessXML('devices', rsp, db_access, config_data[server])
+            parse_billing = ProcessXML('devices', rsp, config_data[server])
             parse_billing.process_xml() 
          time.sleep(3)
    elif config_data[server]['target'] == 'CMS':
       if inputs.confspace:
          # get the conference space data
-         conf_url = 'https://' + config_data[server]['ip_address'] + '/api/v1/coSpaces'
+         #conf_url = 'https://' + config_data[server]['ip_address'] + '/api/v1/coSpaces'
+         conf_url = 'http://' + config_data[server]['ip_address'] + ':' + config_data[server]['port'] + '/api/v1/coSpaces' 
          rsp = ''
 
          try:
-            rsp = misc_util.axl_data_request(url=conf_url, add_header=soap_header, usr=cucm_usr, pw=cucm_pw)
+            rsp = misc_util.axl_data_request(url=conf_url, req_type='conf_spaces',
+                                             usr=config_data[server]['axlusr'],
+                                             pw=config_data[server]['axlpwd'])
          except (urllib2.HTTPError, urllib2.URLError) as e: 
             misc_util.log_message(logspk, config_data[server],
-                                   'ERROR with HTTP call to Cisco Meeting Server', 'sys_error', e)
+                                   ' with HTTP call to Cisco Meeting Server', 'sys_error', e)
          if not rsp:
             misc_util.log_message(logspk, config_data[server],
                                    'No XML data returned from Cisco Meeting Server', 'error')
          else:
             # Data from conferences spaces processed, logged here  
-            parse_billing = ProcessXML('conf_spaces', rsp, db_access, config_data[server])
+            parse_billing = ProcessXML('conf_spaces', rsp, config_data[server])
             parse_billing.process_xml()
          time.sleep(3)
 
-db_access.close_db_access()
 sys.exit(1)
