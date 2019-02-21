@@ -1,7 +1,9 @@
+from sqlalchemy import text
 from sqlalchemy import String
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import DateTime
+from sqlalchemy import and_
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -78,10 +80,35 @@ class DeviceDataSchema(Schema):
 
 def get_data_by_contract(contract_num=None):
     '''' get data for contract number, could be one or many '''
-
     session = Session()
     data = session.query(DeviceData).filter(DeviceData.contract == contract_num) 
-    device_schema = DeviceDataSchema(many=True)
+    session.close()
 
+    device_schema = DeviceDataSchema(many=True)
+    json_result = device_schema.dumps(data)
+    return json_result.data 
+
+
+def get_data_by_mon_date(month=None, date=None):
+    '''' get data by month and date, could be one or many '''
+    session = Session()
+    data = session.query(DeviceData).from_statement(
+           text("SELECT * FROM device_data where \
+                 DATE_FORMAT(date_received,'%Y-%m-%d') \
+                 =:gdate and month=:gmonth")).params(gdate=date, gmonth=month).all()
+    session.close()
+
+    device_schema = DeviceDataSchema(many=True)
+    json_result = device_schema.dumps(data)
+    return json_result.data 
+
+
+def get_all_device_data():
+    '''' get all table data '''
+    session = Session()
+    data = session.query(DeviceData).all()
+    session.close()
+
+    device_schema = DeviceDataSchema(many=True)
     json_result = device_schema.dumps(data)
     return json_result.data 

@@ -4,10 +4,12 @@ from flask_restful import abort
 from flask_restful import Resource
 from flask_restful import reqparse
 
+# validation for device_data
 from DeviceVal import ContractSchema
 from DeviceVal import DeviceMonSchema
 from DeviceVal import DeviceDateSchema 
 
+# sqlalchemy setup and serializing data
 import DataBase
 
 class Device(Resource):
@@ -22,7 +24,7 @@ class Device(Resource):
 
        # setup sqlalchemy here
        rsp = DataBase.get_data_by_contract(contract_num)
-       return {'response': rsp}
+       return rsp
 
 class Devices(Resource):
     def get(self ):
@@ -44,17 +46,12 @@ class Devices(Resource):
          return {'Invalid date:': rsp[1]['date']}
 
       #   setup the select, sqlalchemy
-      if args['month'] and args['date']:
-         find_by = args['month'] + args['date']
-      elif args['month']:
-         find_by = args['month']
-      elif args['date']:
-         find_by = args['date']
-
-      return {'nameis': find_by}
+      rsp = DataBase.get_data_by_mon_date(args['month'], args['date'])
+      return rsp
 
 
 class AllDevices(Resource):
   def get(self):
-      return {'nameall': 'allstuff'}
+      rsp = DataBase.get_all_device_data()
+      return rsp 
 
