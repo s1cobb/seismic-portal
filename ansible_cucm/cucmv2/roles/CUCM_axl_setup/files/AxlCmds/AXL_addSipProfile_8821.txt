@@ -1,0 +1,101 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.cisco.com/AXL/API/11.5">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ns:addSipProfile sequence="?">
+         <sipProfile>
+            <name>Custom 8821/8821-EX SIP Profile</name>
+               <description>Custom 8821/8821-EX SIP Profile</description>
+               <defaultTelephonyEventPayloadType>101</defaultTelephonyEventPayloadType>
+               <redirectByApplication>false</redirectByApplication>
+               <ringing180>false</ringing180>
+               <timerInvite>180</timerInvite>
+               <timerRegisterDelta>30</timerRegisterDelta>
+               <timerRegister>3600</timerRegister>
+               <timerT1>500</timerT1>
+               <timerT2>4000</timerT2>
+               <retryInvite>6</retryInvite>
+               <retryNotInvite>10</retryNotInvite>
+               <startMediaPort>16384</startMediaPort>
+               <stopMediaPort>32766</stopMediaPort>
+               <startVideoPort>0</startVideoPort>
+               <stopVideoPort>0</stopVideoPort>
+               <dscpForAudioCalls/>
+               <dscpForVideoCalls/>
+               <dscpForAudioPortionOfVideoCalls/>
+               <dscpForTelePresenceCalls/>
+               <dscpForAudioPortionOfTelePresenceCalls/>
+               <callpickupListUri>x-cisco-serviceuri-opickup</callpickupListUri>
+               <callpickupGroupUri>x-cisco-serviceuri-gpickup</callpickupGroupUri>
+               <meetmeServiceUrl>x-cisco-serviceuri-meetme</meetmeServiceUrl>
+               <userInfo>None</userInfo>
+               <dtmfDbLevel>Nominal</dtmfDbLevel>
+               <callHoldRingback>Off</callHoldRingback>
+               <anonymousCallBlock>Off</anonymousCallBlock>
+               <callerIdBlock>Off</callerIdBlock>
+               <dndControl>User</dndControl>
+               <telnetLevel>Disabled</telnetLevel>
+               <timerKeepAlive>300</timerKeepAlive>
+               <timerSubscribe>300</timerSubscribe>
+               <timerSubscribeDelta>15</timerSubscribeDelta>
+               <maxRedirects>70</maxRedirects>
+               <timerOffHookToFirstDigit>15000</timerOffHookToFirstDigit>
+               <callForwardUri>x-cisco-serviceuri-cfwdall</callForwardUri>
+               <abbreviatedDialUri>x-cisco-serviceuri-abbrdial</abbreviatedDialUri>
+               <confJointEnable>true</confJointEnable>
+               <rfc2543Hold>false</rfc2543Hold>
+               <semiAttendedTransfer>true</semiAttendedTransfer>
+               <enableVad>false</enableVad>
+               <stutterMsgWaiting>false</stutterMsgWaiting>
+               <callStats>false</callStats>
+               <t38Invite>false</t38Invite>
+               <faxInvite>false</faxInvite>
+               <rerouteIncomingRequest>Never</rerouteIncomingRequest>
+               <resourcePriorityNamespaceListName/>
+               <enableAnatForEarlyOfferCalls>false</enableAnatForEarlyOfferCalls>
+               <rsvpOverSip>Local RSVP</rsvpOverSip>
+               <fallbackToLocalRsvp>true</fallbackToLocalRsvp>
+               <sipRe11XxEnabled>Disabled</sipRe11XxEnabled>
+               <gClear>Disabled</gClear>
+               <sendRecvSDPInMidCallInvite>false</sendRecvSDPInMidCallInvite>
+               <enableOutboundOptionsPing>false</enableOutboundOptionsPing>
+               <optionsPingIntervalWhenStatusOK>60</optionsPingIntervalWhenStatusOK>
+               <optionsPingIntervalWhenStatusNotOK>120</optionsPingIntervalWhenStatusNotOK>
+               <deliverConferenceBridgeIdentifier>false</deliverConferenceBridgeIdentifier>
+               <sipOptionsRetryCount>6</sipOptionsRetryCount>
+               <sipOptionsRetryTimer>500</sipOptionsRetryTimer>
+               <sipBandwidthModifier>TIAS and AS</sipBandwidthModifier>
+               <enableUriOutdialSupport>f</enableUriOutdialSupport>
+               <userAgentServerHeaderInfo>Send Unified CM Version Information as User-Agent Header</userAgentServerHeaderInfo>
+               <allowPresentationSharingUsingBfcp>false</allowPresentationSharingUsingBfcp>
+               <scriptParameters/>
+               <isScriptTraceEnabled>false</isScriptTraceEnabled>
+               <sipNormalizationScript/>
+               <allowiXApplicationMedia>false</allowiXApplicationMedia>
+               <dialStringInterpretation>Phone number consists of characters 0-9, *, #, and + (others treated as URI addresses)</dialStringInterpretation>
+               <acceptAudioCodecPreferences>Default</acceptAudioCodecPreferences>
+               <mlppUserAuthorization>false</mlppUserAuthorization>
+               <isAssuredSipServiceEnabled>false</isAssuredSipServiceEnabled>
+               <enableExternalQoS>false</enableExternalQoS>
+               <resourcePriorityNamespace/>
+               <useCallerIdCallerNameinUriOutgoingRequest>false</useCallerIdCallerNameinUriOutgoingRequest>
+               <callerIdDn/>
+               <callerName/>
+               <callingLineIdentification>Default</callingLineIdentification>
+               <rejectAnonymousIncomingCall>false</rejectAnonymousIncomingCall>
+               <callpickupUri>x-cisco-serviceuri-pickup</callpickupUri>
+               <rejectAnonymousOutgoingCall>false</rejectAnonymousOutgoingCall>
+               <videoCallTrafficClass>Mixed</videoCallTrafficClass>
+               <sdpTransparency/>
+               <allowMultipleCodecs>false</allowMultipleCodecs>
+               <sipSessionRefreshMethod>Invite</sipSessionRefreshMethod>
+               <earlyOfferSuppVoiceCall>Disabled (Default value)</earlyOfferSuppVoiceCall>
+               <cucmVersionInSipHeader>Major And Minor</cucmVersionInSipHeader>
+               <confidentialAccessLevelHeaders>Disabled</confidentialAccessLevelHeaders>
+               <destRouteString>false</destRouteString>
+               <inactiveSDPRequired>false</inactiveSDPRequired>
+               <connectCallBeforePlayingAnnouncement>false</connectCallBeforePlayingAnnouncement>
+         </sipProfile>
+      </ns:addSipProfile>
+   </soapenv:Body>
+</soapenv:Envelope>
+

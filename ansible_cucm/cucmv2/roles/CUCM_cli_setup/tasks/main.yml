@@ -1,0 +1,127 @@
+---
+# tasks file for CUCM_cli_setup
+# 
+# Takes output from the perl expect scripts and checks the rsp
+# variable for correct search strings
+
+- name: 'Enable FIPS, generate certificates, password security, reboot, will take up to 6 mins to complete...'
+  script: enable_fips.pl {{cucm_login}} {{cucm_pass}} {{callmgrcli.cmd7.cmd}} {{ log_file_path }}
+  register: rsp
+
+- name: "Verify Certificate for Web security was created"
+  debug:
+    msg: "Web security certificate was generated..."
+  when: rsp.stdout is search("Successfully Regenerated Certificate for tomcat")
+
+- set_fact:
+     errors: "{{ errors }} + ['Web security Certificate failed to regenerate']"
+  when: not rsp.stdout | search("Successfully Regenerated Certificate for tomcat")
+
+- name: "Verify FIPS has been enabled..."
+  debug:
+     msg: "FIPS mode has been enabled..."
+  when: rsp.stdout is search('FIPS mode enabled successfully')
+
+- set_fact:
+     errors: "{{ errors }} + ['FIPS mode failed to be enabled...']"
+  when: not rsp.stdout |  search("FIPS mode enabled successfully")
+
+- name: "Wait 120 seconds for reboot to finish..."
+  wait_for_connection:
+     timeout: 120 
+     delay:  120 
+
+######################################################
+- name: 'CLI command: {{ callmgrcli.cmd1.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd1.cmd }} 
+                            {{ callmgrcli.cmd1.speed }} {{ module_pl_path }}
+  register: rsp
+
+- name: "Verify Audit Daemon has been started"
+  debug:
+     msg: "Audit Daemon has been started..."
+  when: rsp.stdout is search("auditd daemon has been started")
+
+- set_fact:
+     errors: "{{ errors }} + ['Audit Daemon failed to be started']"
+  when: not rsp.stdout |  search("auditd daemon has been started") 
+
+#######################################################
+- name: 'CLI command: {{ callmgrcli.cmd2.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd2.cmd }} 
+                            {{ callmgrcli.cmd2.speed }} {{ module_pl_path }}
+  register: rsp
+
+- name: "Verify logging enable"
+  debug:
+    msg: "Logging enabled..."
+  when: rsp.stdout is search("Logging Enabled")
+
+
+- set_fact:
+     errors: "{{ errors }} + ['Logging enabled failed']"
+  when: not rsp.stdout |  search("Logging Enabled") 
+
+######################################################
+- name: 'CLI command: {{ callmgrcli.cmd3.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd3.cmd }} 
+                            {{ callmgrcli.cmd3.speed }} {{ module_pl_path }}
+  register: rsp
+
+- name: "Verify Account lockout is enabled..."
+  debug:
+    msg: "Account lockout has been enabled..."
+  when: rsp.stdout is search("Account lockout successfully enabled")
+
+- set_fact:
+     errors: "{{ errors }} + ['Account lockout failed to be enabled']"
+  when: not rsp.stdout |  search("Account lockout successfully enabled") 
+
+########################################################
+- name: 'CLI command: {{ callmgrcli.cmd4.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd4.cmd }} 
+                            {{ callmgrcli.cmd4.speed }} {{ module_pl_path }}
+  register: rsp
+
+- name: "Verify Account lockout is configured..."
+  debug:
+    msg: "Account lockout has been configured..."
+  when: rsp.stdout is search("Account lockout successfully configured")
+
+- set_fact:
+     errors: "{{ errors }} + ['Account lockout configuration failed']"
+  when: not rsp.stdout |  search("Account lockout successfully configured") 
+
+########################################################
+- name: 'CLI command: {{  callmgrcli.cmd5.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd5.cmd }} 
+                            {{ callmgrcli.cmd5.speed }} {{ module_pl_path }}
+  register: rsp
+
+- debug: msg="{{ rsp.stdout }}"
+
+- name: "Verify password inactivity is Enabled..."
+  debug:
+    msg: "Password inactivity  was enabled..."
+  when: rsp.stdout is search("Enabled password inactivity successfully")
+
+- set_fact: 
+     errors: "{{ errors }} + ['Password inactivity failed to be enabled']"
+  when: not rsp.stdout |  search("Enabled password inactivity successfully") 
+
+########################################################
+- name: 'CLI command: {{  callmgrcli.cmd6.cmd }}'
+  script: cucm_cli_setup.pl {{cucm_login}} {{cucm_pass}} {{ callmgrcli.cmd6.cmd }} 
+                            {{ callmgrcli.cmd6.speed }} {{ module_pl_path }}
+  register: rsp
+
+- name: "Verify password inactivity is configured..."
+  debug:
+    msg: "Password inactivity has been configured..."
+  when: rsp.stdout is search("Successfully set the Inactivity days")
+
+- set_fact: 
+     errors: "{{ errors }} + ['Password inactivity days configuration failed']"
+  when: not rsp.stdout |  search("Successfully set the Inactivity days") 
+
+...
