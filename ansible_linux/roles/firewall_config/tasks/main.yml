@@ -1,0 +1,32 @@
+---
+# tasks file for firewall_config
+
+- name: "V-72272 -- configure firewall for ipv4 filtering"
+  shell: firewall-cmd --direct --permanent --add-rule ipv4 filter IN_public_allow 0
+            -m tcp -p tcp -m limit --limit 25/minute --limit-burst 100 -j ACCEPT
+  ignore_errors: yes
+  tags:
+    - firewall_setup
+    - '72272'
+
+- name: "V-72272 -- restart firewalld..."
+  shell: systemctl restart firewalld
+  ignore_errors: yes
+  tags:
+    - firewall_setup
+    - '72272'
+
+- name: "V-72272 -- Check for ipv4 filtering..."
+  command: firewall-cmd --direct --get-rule ipv4 filter IN_public_allow
+  register: rsp
+  ignore_errors: yes
+  tags:
+    - firewall_setup
+    - '72272'
+
+- debug: msg="Firewall info - {{rsp.stdout}}"
+  ignore_errors: yes
+  tags:
+    - firewall_setup
+    - '72272'
+

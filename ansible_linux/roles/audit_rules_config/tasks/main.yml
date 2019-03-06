@@ -1,0 +1,38 @@
+---
+# tasks file for audit_rules_install
+
+- name: "Stop the auditd service before adding to file..."
+  shell:  service auditd stop
+  register: rsp
+  tags:
+    - audrule_setup
+
+- debug: msg="{{ rsp }}"
+
+- name: "copy audit.rules to /etc/audit/rules.d/audit.rules"
+  copy:
+    src: roles/audit_rules_config/files/add_audit_rules.txt
+    dest: /etc/audit/rules.d/audit.rules
+  tags:
+    - audrule_setup
+
+- name: "wait 4 seconds before starting the auditd service.."
+  pause:
+    seconds: 4
+  tags:
+    - audrule_setup
+
+- name: "Start the auditd service..."
+  shell: service auditd start
+  register: resp
+  tags:
+    - audrule_setup
+
+- name: "wait 4 seconds after starting the auditd service..."
+  pause:
+    seconds: 4
+  tags:
+    - audrule_setup
+
+...
+

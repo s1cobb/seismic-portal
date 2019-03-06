@@ -1,0 +1,155 @@
+---
+# tasks file for pam_auth
+
+- name: "V-72433 -- Add cert policy to /etc/pam_pkcs11/pam_pkcs11.conf"
+  replace:
+     path: /etc/pam_pkcs11/pam_pkcs11.conf
+     regexp: '    cert_policy = ca, signature;'
+     replace: "    cert_policy = ca, ocsp_on, signature;"
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '72433'
+
+- name: "V-71919 -- Remove sha256 from system-auth..."
+  replace:
+     path: /etc/pam.d/system-auth
+     regexp: 'sha256'
+     replace: ''
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71919'
+
+- name: "V-71919 -- Remove sha256 from passwd-auth..."
+  replace:
+     path: /etc/pam.d/password-auth
+     regexp: 'sha256'
+     replace: 'sha512'
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71919'
+
+- name: "V-71919 -- change password requisite to password required..."
+  replace:
+     path: /etc/pam.d/system-auth
+     regexp: 'password    requisite     pam'
+     replace: 'password    required      pam'
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71919'
+
+
+#- name: "V-71919 -- password pam config in /etc/pam.d/system-auth-ac"
+#  lineinfile:
+#     path: /etc/pam.d/system-auth-ac
+#     line: 'password     sufficient    pam_unix.so sha512'
+#  ignore_errors: yes
+#  tags:
+#    - pam_setup
+#    - '71919'
+
+#- name: "V-71943 -- password pam authtok config in /etc/pam.d/system-auth-ac"
+#  lineinfile:
+#     path: /etc/pam.d/system-auth-ac
+#     line: 'password     sufficient    pam_unix.so use_authtok sha512 shadow remember=5'
+#  ignore_errors: yes
+#  tags:
+#    - pam_setup
+#    - '71943'
+
+#- name: "V-71945 -- /etc/pam.d/system-auth-ac"
+#  blockinfile:
+#     path: /etc/pam.d/system-auth-ac
+#     block: |
+#       auth        required      pam_faillock.so preauth silent audit deny=3 even_deny_root fail_interval=900 unlock_time=900
+#       auth        [default=die] pam_faillock.so authfail audit deny=3 even_deny_root fail_interval=900 unlock_time=900
+#       account     required      pam_faillock.so
+#  ignore_errors: yes
+#  tags:
+#    - pam_setup
+#    - '71945'
+
+#- name: "V-72275 -- /etc/pam.d/password-auth-ac"
+#  blockinfile:
+#     path: /etc/pam.d/password-auth-ac
+#     block: |
+#       auth        required      pam_faillock.so preauth silent audit deny=3 even_deny_root fail_interval=900 unlock_time=900
+#       auth        [default=die] pam_faillock.so authfail audit deny=3 even_deny_root fail_interval=900 unlock_time=900
+#       account     required      pam_faillock.so
+#  ignore_errors: yes
+#  tags:
+#    - pam_setup
+#    - '72275'
+
+- name: "V-73159 -- password required in /etc/pam.d/system-auth-ac"
+  lineinfile:
+     path: /etc/pam.d/system-auth-ac
+     line: 'password    required      pam_pwquality.so retry=3'
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '73159'
+
+- name: "V-73159 -- password required in /etc/pam.d/passwd"
+  lineinfile:
+     path: /etc/pam.d/passwd
+     line: 'password    required      pam_pwquality.so retry=3'
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '73159'
+
+- name: "V-72275 -- Add session required to /etc/pam.d/postlogin-ac"
+  lineinfile:
+     path: /etc/pam.d/postlogin-ac
+     line: "session     required      pam_lastlog.so showfailed"
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '72275'
+
+- name: "V-71937 -- Remove nullok from system-auth-ac..."
+  replace:
+     path: /etc/pam.d/system-auth-ac
+     regexp: 'nullok'
+     replace: ''
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71937'
+
+- name: "V-71937 -- Remove nullok from password-auth-ac..."
+  replace:
+     path: /etc/pam.d/password-auth-ac
+     regexp: 'nullok'
+     replace: ''
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71937'
+
+- name: "V-71937 -- Remove nullok from system-auth..."
+  replace:
+     path: /etc/pam.d/system-auth
+     regexp: 'nullok'
+     replace: ''
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71937'
+
+- name: "V-71937 -- Remove nullok from password-auth..."
+  replace:
+     path: /etc/pam.d/password-auth
+     regexp: 'nullok'
+     replace: ''
+  ignore_errors: yes
+  tags:
+    - pam_setup
+    - '71937'
+
+...
+

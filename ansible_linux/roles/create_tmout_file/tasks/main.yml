@@ -1,0 +1,26 @@
+---
+# tasks file for create_tmout_file
+
+- name: "V-72223 -- create file /etc/profile.d/tmout.sh"
+  file:
+     path: /etc/profile.d/tmout.sh
+     state: touch
+  ignore_errors: yes
+  tags:
+    - tmout_setup
+    - '72223'
+
+- name: "V-72223 -- Add inactivity timeout to /etc/profile"
+  blockinfile:
+    path: /etc/profile.d/tmout.sh
+    block: |
+      #!/bin/bash
+
+      TMOUT=600
+      readonly TMOUT
+      export TMOUT
+  ignore_errors: yes
+  tags:
+    - tmout_setup
+    - '72223'
+

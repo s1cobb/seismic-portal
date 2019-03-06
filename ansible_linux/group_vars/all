@@ -1,0 +1,12 @@
+# scc stig benchmark file vars
+stig_scap_benchmark_file: U_Red_Hat_Enterprise_Linux_7_V2R1_STIG_SCAP_1-2_Benchmark.zip
+stig_scap_benchmark_unzip_file: U_Red_Hat_Enterprise_Linux_7_V2R2_STIG_SCAP_1-2_Benchmark.xml
+
+# scc rpm and rpm path location
+scc_rhel_bundle_folder: scc-5.0.2_rhel7_x86_64_bundle
+scc_rpm_install_pkg: scc-5.0.2.rhel7.x86_64.rpm
+scc_install_rpm_path: /home/cnsauto/scc-5.0.2_rhel7_x86_64_bundle/scc-5.0.2_rhel7_x86_64
+
+# exclude certain tasks from running on these hosts
+exclude_ip: 192.168.132.61
+

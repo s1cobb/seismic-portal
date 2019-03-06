@@ -1,0 +1,15 @@
+---
+
+# sudo ansible-playbook stig_setup1.yml --ask-become-pass --tags 'all'
+# sudo ansible-playbook stig_setup2.yml --ask-become-pass --tags 'all'
+
+- hosts: stig_machine_ips
+  gather_facts: no
+  remote_user: hcsdadm
+  become: yes
+  become_method: su
+
+  roles:
+    - { role: set_permissions }
+
+...

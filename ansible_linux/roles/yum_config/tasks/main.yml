@@ -1,0 +1,86 @@
+---
+# tasks file for yum_config_install
+
+- name: "V-71981 -- replace repo_gpgcheck into yum.conf"
+  lineinfile:
+      path: /etc/yum.conf
+      insertafter: "obsoletes"
+      line: "repo_gpgcheck=1"
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '71981'
+
+- name: "V-71979 -- replace localpkg_gpgcheck into yum.conf"
+  lineinfile:
+      path: /etc/yum.conf
+      insertafter: "obsoletes"
+      line: "localpkg_gpgcheck=1"
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '71979'
+
+- name: "V-71979 -- replace gpgcheck into yum.conf"
+  lineinfile:
+      path: /etc/yum.conf
+      insertafter: "obsoletes"
+      line: "gpgcheck=1"
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '71979'
+
+- name: "V-71987 -- insert Clean_requirements_on_remove into yum.conf"
+  lineinfile:
+      path: /etc/yum.conf
+      insertafter: "obsoletes"
+      line: "clean_requirements_on_remove=1"
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '71987'
+
+- name: "V-72417 -- yum install esc, pam_pkcs11, authconf-gtk"
+  yum:
+     name:
+       - esc
+       - pam_pkcs11
+       - authconfig-gtk
+     state: present
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '72417'
+
+- name: "V-71973 -- yum install aide"
+  yum:
+     name:
+       - aide
+     state: present
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '71973'
+
+- name: "V-72297 -- yum remove postfix"
+  yum:
+    name: postfix
+    state: absent
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '72297'
+
+- name: "V-72299 -- yum remove vsftpd"
+  yum:
+    name: vsftpd
+    state: absent
+  ignore_errors: yes
+  tags:
+    - yum_setup
+    - '72299'
+  when: inventory_hostname != exclude_ip
+
+...
+

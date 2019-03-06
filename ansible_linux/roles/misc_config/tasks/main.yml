@@ -1,0 +1,274 @@
+---
+# tasks file for misc_config
+
+- name: "V-72269 -- config Maxpoll in file /etc/ntp.conf"
+  lineinfile:
+    path: /etc/ntp.conf
+    create: yes
+    line: "maxpoll 10"
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72269'
+
+- name: "Restart ntpd service"
+  shell: systemctl restart ntpd
+  register: resp
+  ignore_errors: yes
+
+- name: "V-72011 -- create directory /var/ftp"
+  file:
+    path: /var/ftp
+    state: directory
+    mode: 0755
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72011'
+
+- name: "V-72011 -- pwck -r command..."
+  shell: pwck -r
+  register: rsp
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72011'
+
+- name: "V-72001 -- groupdel games from /etc/passwd..."
+  shell: groupdel games
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72001'
+
+- name: "V-72001 -- userdel games from /etc/passwd..."
+  shell: userdel games
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72001'
+
+- name: "V-71983 -- create /etc/modprobe.d/blacklist.conf..."
+  file:
+    path: /etc/modprobe.d/blacklist.conf
+    state: touch
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71983'
+
+- name: "V-71983 -- add blacklist usb-storage to blacklist.conf..."
+  lineinfile:
+    path: /etc/modprobe.d/blacklist.conf
+    line: 'blacklist usb-storage'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71983'
+
+- name: "V-77821 -- add blacklist dccp to blacklist.conf..."
+  lineinfile:
+    path: /etc/modprobe.d/blacklist.conf
+    line: 'blacklist dccp'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '77821'
+
+- name: "V-71951 -- add FAIL_DELAY to file /etc/login.defs..."
+  lineinfile:
+    path: /etc/login.defs
+    line: 'FAIL_DELAY 4'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71951'
+
+
+- name: "V-71911 -- uncomment difok in  /etc/security/pwquality.conf..."
+  replace:
+    path: /etc/security/pwquality.conf
+    regexp: '^difok\s=\s\d+'
+    replace: 'difok = 8'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71911'
+
+- name: "V-71917 -- uncomment maxclassrepeat /etc/security/pwquality.conf..."
+  replace:
+    path: /etc/security/pwquality.conf
+    regexp: '# maxclassrepeat = 0'
+    replace: 'maxclassrepeat = 0'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71917'
+
+- name: "V-77825 -- change configuration for kernelrandomizevaspace in file /etc/sysctl.conf..."
+  replace:
+    path: /etc/sysctl.conf
+    regexp: 'kernelrandomizevaspace = 2'
+    replace: 'kernel.randomize_va_space = 2'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '77825'
+
+
+- name: "V-77821 -- create file /etc/modprobe.d/dccp.conf..."
+  file:
+    path: /etc/modprobe.d/dccp.conf
+    state: touch
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '77821'
+
+- name: "V-77821 -- add install dccp line into file /etc/modprobe.d/dccp.conf"
+  lineinfile:
+    path: /etc/modprobe.d/dccp.conf
+    line: 'install dccp /bin/true'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '77821'
+
+- name: "V-71923 -- configure crypt_style in file /etc/libuser.conf..."
+  replace:
+    path: /etc/libuser.conf
+    regexp: 'crypt_style = sha256'
+    replace: 'crypt_style = sha512'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71923'
+
+- name: "V-71927 -- change hcsdadm password aging in file /etc/shadow..."
+  shell: chage -m 1 hcsdadm
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71927'
+
+- name: "V-71927 -- change cnsauto password aging in file /etc/shadow..."
+  shell: chage -m 1 cnsauto
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71927'
+
+- name: "V-71927 -- change cnsadm password aging in file /etc/shadow..."
+  shell: chage -m 1 cnsadm
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71927'
+
+#- name: "V-71931 -- change hcsdadm password expiration in file /etc/shadow..."
+#  shell: chage -M 60 hcsdadm
+#  ignore_errors: yes
+#  tags:
+#    - misc_setup
+#    - '71931'
+
+- name: "V-71931 -- change cnsauto password expiration in file /etc/shadow..."
+  shell: chage -M 60 cnsauto
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71931'
+
+- name: "V-71927 -- change cnsadm password expiration in file /etc/shadow..."
+  shell: chage -M 60 cnsadm
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71931'
+
+- name: "V-71915 -- change maxrepeat value in file /etc/security/pwquality.conf..."
+  replace:
+    path: /etc/security/pwquality.conf
+    regexp: 'maxrepeat = 2'
+    replace: 'maxrepeat = 3'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71915'
+
+- name: "V-72065 -- systemctl enable tmp.mount..."
+  shell: systemctl enable tmp.mount
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72065'
+
+- name: "V-xxxxx -- create /etc/audisp/audisp-remote.conf..."
+  file:
+    path: /etc/audisp/audisp-remote.conf
+    state: touch
+  ignore_errors: yes
+  tags:
+    - misc_setup
+
+- name: "V-xxxxx -- add enable krb5 to /etc/audisp/audisp-remote.conf..."
+  lineinfile:
+    path: /etc/audisp/audisp-remote.conf
+    line: 'enable_krb5 = yes'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+
+- name: "V-71863 -- add correct DoD Notice and Consent Banner, /etc/issue"
+  copy:
+     src:  roles/misc_config/files/banner_msg.txt
+     dest: /etc/issue
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '71863'
+
+- name: "V-81009, V-81011, V-81013 -- add tmpfs to /etc/fstab"
+  lineinfile:
+    path: /etc/fstab
+    line: 'tmpfs                     /dev/shm                tmpfs    defaults,nodev,nosuid,noexec 0 0'
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '81009'
+
+- name: "V-72271, V-72283, V-72285  -- set network interface configuration"
+  blockinfile:
+     path: /etc/sysctl.conf
+     block: |
+
+          # set rate-limiting measures on impacted network interfaces
+          net.ipv4.tcp_invalid_ratelimit = 500
+
+          # set not to forward IPv4 source-route packets by default
+          net.ipv4.conf.default.accept_source_route = 0
+
+          # Configure IPv4 source-routed packets
+          net.ipv4.conf.all.accept_source_route = 0
+
+          # set to not forward packets
+          net.ipv4.ip_forward = 0
+
+          # do not forward IPv6 source-routed packets
+          net.ipv6.conf.all.accept_source_route = 0
+  ignore_errors: yes
+  tags:
+    - misc_setup
+    - '72271'
+    - '72283'
+    - '72285'
+
+- name: "Restart the sysctl --system"
+  shell: sysctl --system
+  register: resp
+  ignore_errors: yes
+  tags:
+    - misc_setup
+
+...
+
