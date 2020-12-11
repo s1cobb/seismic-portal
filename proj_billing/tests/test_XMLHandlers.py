@@ -8,7 +8,7 @@ import xml.sax
 from xml.sax.saxutils import unescape
 from xml.sax._exceptions import SAXParseException
 
-sys.path.append('/root/billing')
+sys.path.append('/home/osboxes/seismic-portal/proj_billing')
 
 # user modules to be tested
 from XMLHandlers import LicXMLHandler
