@@ -1,0 +1,18 @@
+curl -iX GET "localhost:8000/drones/"
+curl -iX GET "localhost:8000/drones/?offset=0"
+curl -iX GET "localhost:8000/drones/?limit=5&offset=0"
+curl -iX GET "localhost:8000/drones/?limit=20
+
+curl -iX GET "localhost:8000/drone-categories/?name=Quadcopter"
+curl -iX GET "localhost:8000/drones/?drone_category=1&has_it_competed=False&ordering=-name"
+curl -iX GET "localhost:8000/drones/?drone_category=1&has_it_competed=False&limit=4&offset=4&ordering=-name"
+curl -iX GET "localhost:8000/competitions/?pilot_name=Penelope+Pitstop&drone_name=WonderDrone"
+
+curl -iX GET "localhost:8000/competitions/?min_distance_in_feet=700&max_distance_in_feet=9000&from_achievement_date=2017-10-18&to_achievement_data=2017-10-22&ordering=-achievement_date"
+curl -iX GET "localhost:8000/drones/?search=G"
+
+curl -iX POST -H "Content-Type: application/json" -d '{"name": "Python Drone2", "drone_category": "Quadcopter", "manufactoring_date": "2021-04-22T02:03:00Z", "has_it_competed":"false"}' localhost:8000/drones/
+
+
+headers = {'Authorization': 'Token mytoken'}
+rsp = requests.get('http://127.0.0.1:8000/pilots/', headers=headers
