@@ -3,7 +3,7 @@
 '''
    Filename: get_billing.py
    Version: Python 2.7.5
-   Author: Steve Cobb (stcobb@cisco.com)
+   Author: Steve Cobb
    Description:
         This script will retrieve the License/Device usage from the
         Call Manager and the Conference configuration from the Cisco
