@@ -8,6 +8,10 @@ from flask_restful import Resource
 app = Flask(__name__)
 api = Api(app)
 
+######
+#  testing 1
+#
+
 class Message(Resource):
     ''' Rest API interface to the MySql message database for
         maintaining messages received from rabbitmq 
